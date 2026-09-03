@@ -1,0 +1,11 @@
+---
+description: Nunca assumir contexto; perguntar antes de decisões ambíguas
+alwaysApply: true
+---
+
+# Contexto e perguntas
+
+- Nunca assumir requisitos, escopo ou trade-offs quando estiverem ambíguos ou incompletos.
+- Antes de decisões que mudem contrato HTTP da Function, secrets, integração com a API ou runtime: explicitar a dúvida e perguntar.
+- Preferir 1–2 perguntas críticas por vez; propor opções concretas quando houver caminhos válidos distintos.
+- Canon de produto: decisões da Fase 03 no workspace `local/FASE03-CHECKLIST.md` e ADRs deste repo quando existirem; não inventar escopo além disso.
