@@ -4,7 +4,7 @@ Cloud Function (GCP) de autenticação de **cliente**: CPF → JWT. Parte da org
 
 ## Antes de mudar código
 
-1. Conferir decisões de auth no checklist local da Fase 03 / ADRs deste repo (quando existirem)
+1. Conferir ADRs em [`docs/adrs/`](docs/adrs/) (e requisitos da `api` quando o contrato HTTP for tocado)
 2. Espelhar padrões das pastas vizinhas; não inventar estrutura paralela
 3. Não implementar feature futura sem decisão fechada (runtime, contrato HTTP, secrets)
 4. **Git:** nunca commit/push direto em `main` — branch → PR → merge (ver [`.cursor/rules/git-workflow.mdc`](.cursor/rules/git-workflow.mdc))
