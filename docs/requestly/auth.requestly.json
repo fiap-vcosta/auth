@@ -57,7 +57,7 @@
           "pathVariables": [],
           "body": {
             "contentType": "raw",
-            "raw": "{\n  \"cpf\": \"{{cpf}}\"\n}",
+            "raw": "{\n  \"documento\": \"{{documento}}\"\n}",
             "rawContentType": "application/json"
           },
           "contentType": "raw"
@@ -87,7 +87,7 @@
     },
     {
       "id": "a1000001-auth-0001-4001-8001-000000000021",
-      "name": "cpf-invalido",
+      "name": "documento-invalido",
       "type": "api",
       "parentId": "a1000001-auth-0001-4001-8001-000000000020",
       "deleted": false,
@@ -109,7 +109,7 @@
           "pathVariables": [],
           "body": {
             "contentType": "raw",
-            "raw": "{\n  \"cpf\": \"111\"\n}",
+            "raw": "{\n  \"documento\": \"111\"\n}",
             "rawContentType": "application/json"
           },
           "contentType": "raw"
@@ -122,7 +122,7 @@
     },
     {
       "id": "a1000001-auth-0001-4001-8001-000000000022",
-      "name": "cpf-inexistente",
+      "name": "documento-inexistente",
       "type": "api",
       "parentId": "a1000001-auth-0001-4001-8001-000000000020",
       "deleted": false,
@@ -144,7 +144,7 @@
           "pathVariables": [],
           "body": {
             "contentType": "raw",
-            "raw": "{\n  \"cpf\": \"11144477735\"\n}",
+            "raw": "{\n  \"documento\": \"11144477735\"\n}",
             "rawContentType": "application/json"
           },
           "contentType": "raw"
