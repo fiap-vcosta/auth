@@ -37,7 +37,7 @@ Cloud Function (GCP) de autenticação de **cliente**: CPF → JWT. Parte da org
 | `src/jwt.js` | Emissão do JWT cliente (HS256) |
 | `src/config.js` | Lê e valida env obrigatório |
 | `docker-compose.yml` / `Dockerfile` | Ambiente local na porta 8081 |
-| `scripts/smoke-local.sh` | Smoke CPF → JWT |
+| `docs/requestly/` | Collections Requestly (exploratória + e2e) |
 | `test/` | Testes (`node --test`) |
 | `.github/workflows/ci.yml` | lint + test |
 
@@ -52,5 +52,6 @@ npm test
 npm run test:coverage
 npm start                    # :8081
 docker compose up -d --build # alternativa
-npm run smoke:local          # API precisa estar no ar
 ```
+
+Smoke HTTP: importar [`docs/requestly/`](docs/requestly/) no Requestly (CPF `92561324354`).

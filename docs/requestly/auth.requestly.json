@@ -1,0 +1,184 @@
+{
+  "meta": {
+    "version": "1.1.0",
+    "exportedAt": "2026-09-12T19:00:00.000Z",
+    "exportedUsing": "Requestly API Client"
+  },
+  "records": [
+    {
+      "id": "a1000001-auth-0001-4001-8001-000000000001",
+      "name": "auth",
+      "type": "collection",
+      "parentId": null,
+      "deleted": false,
+      "data": {
+        "auth": {
+          "type": "inherit"
+        }
+      },
+      "rank": "a0",
+      "description": "Collection exploratória da Function auth (CPF → JWT). Environment: authUrl (default http://localhost:8081) e cpf. Suites e2e: docs/requestly/auth-e2e-tests.requestly.json"
+    },
+    {
+      "id": "a1000001-auth-0001-4001-8001-000000000010",
+      "name": "00-emitir-jwt",
+      "type": "collection",
+      "parentId": "a1000001-auth-0001-4001-8001-000000000001",
+      "deleted": false,
+      "data": {
+        "auth": {
+          "type": "inherit"
+        }
+      },
+      "rank": "a0",
+      "description": "POST / com CPF → JWT cliente. Pré-requisito: API em :8080 e auth em :8081; mesmos JWT_CLIENTE_* / SERVICE_AUTH_KEY."
+    },
+    {
+      "id": "a1000001-auth-0001-4001-8001-000000000011",
+      "name": "emitir-token",
+      "type": "api",
+      "parentId": "a1000001-auth-0001-4001-8001-000000000010",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{authUrl}}/",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1726150000001,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"cpf\": \"{{cpf}}\"\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "inherit"
+        },
+        "scripts": {
+          "postResponse": "var jsonData = rq.response.json();\nrq.environment.set(\"tokenCliente\", jsonData.token);"
+        }
+      },
+      "rank": "a0"
+    },
+    {
+      "id": "a1000001-auth-0001-4001-8001-000000000020",
+      "name": "01-casos",
+      "type": "collection",
+      "parentId": "a1000001-auth-0001-4001-8001-000000000001",
+      "deleted": false,
+      "data": {
+        "auth": {
+          "type": "inherit"
+        }
+      },
+      "rank": "a1",
+      "description": "Casos manuais (CPF inválido / inexistente)."
+    },
+    {
+      "id": "a1000001-auth-0001-4001-8001-000000000021",
+      "name": "cpf-invalido",
+      "type": "api",
+      "parentId": "a1000001-auth-0001-4001-8001-000000000020",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{authUrl}}/",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1726150000002,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"cpf\": \"111\"\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "inherit"
+        }
+      },
+      "rank": "a0"
+    },
+    {
+      "id": "a1000001-auth-0001-4001-8001-000000000022",
+      "name": "cpf-inexistente",
+      "type": "api",
+      "parentId": "a1000001-auth-0001-4001-8001-000000000020",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{authUrl}}/",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1726150000003,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"cpf\": \"11144477735\"\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "inherit"
+        }
+      },
+      "rank": "a1"
+    }
+  ],
+  "environments": [
+    {
+      "id": "e1000001-auth-0001-4001-8001-000000000001",
+      "name": "Local",
+      "variables": {
+        "authUrl": {
+          "type": "string",
+          "syncValue": "http://localhost:8081"
+        },
+        "apiUrl": {
+          "type": "string",
+          "syncValue": "http://localhost:8080"
+        },
+        "cpf": {
+          "type": "string",
+          "syncValue": "92561324354"
+        },
+        "tokenCliente": {
+          "type": "secret",
+          "syncValue": ""
+        }
+      }
+    }
+  ],
+  "packages": []
+}

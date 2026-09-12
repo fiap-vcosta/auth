@@ -11,14 +11,14 @@ describe("consultarClientePorDocumento", () => {
         apiBaseUrl: "http://localhost:8080",
         serviceAuthKey: "local-service-auth-key-change-me",
       },
-      "43372251034",
+      "92561324354",
       { fetchFn },
     );
 
     assert.equal(result.status, 200);
     assert.equal(fetchFn.mock.callCount(), 1);
     const [url, options] = fetchFn.mock.calls[0].arguments;
-    assert.equal(url, "http://localhost:8080/api/system/clientes/por-documento/43372251034");
+    assert.equal(url, "http://localhost:8080/api/system/clientes/por-documento/92561324354");
     assert.equal(options.method, "GET");
     assert.equal(options.headers["X-Service-Key"], "local-service-auth-key-change-me");
   });

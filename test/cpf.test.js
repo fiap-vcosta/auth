@@ -4,11 +4,11 @@ const { normalizeCpf, isValidCpf } = require("../src/cpf");
 
 describe("cpf", () => {
   it("normaliza removendo pontuação", () => {
-    assert.equal(normalizeCpf("433.722.510-34"), "43372251034");
+    assert.equal(normalizeCpf("925.613.243-54"), "92561324354");
   });
 
-  it("aceita CPF do seed (11 dígitos)", () => {
-    assert.equal(isValidCpf("43372251034"), true);
+  it("aceita CPF de teste local (11 dígitos)", () => {
+    assert.equal(isValidCpf("92561324354"), true);
   });
 
   it("rejeita CPF com dígitos repetidos", () => {

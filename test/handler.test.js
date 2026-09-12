@@ -48,7 +48,7 @@ describe("handleAuth", () => {
       },
     });
     const res = mockRes();
-    await handleAuth({ method: "POST", body: { cpf: "43372251034" } }, res);
+    await handleAuth({ method: "POST", body: { cpf: "92561324354" } }, res);
     assert.equal(res.statusCode, 500);
     assert.deepEqual(res.body, { erro: "Configuração inválida do serviço" });
   });
@@ -72,7 +72,7 @@ describe("handleAuth", () => {
       consultarClienteFn: async () => ({ status: 404 }),
     });
     const res = mockRes();
-    await handleAuth({ method: "POST", body: { cpf: "43372251034" } }, res);
+    await handleAuth({ method: "POST", body: { cpf: "92561324354" } }, res);
     assert.equal(res.statusCode, 401);
     assert.deepEqual(res.body, { erro: "Não foi possível autenticar o cliente" });
   });
@@ -83,7 +83,7 @@ describe("handleAuth", () => {
       consultarClienteFn: async () => ({ status: 401 }),
     });
     const res = mockRes();
-    await handleAuth({ method: "POST", body: { cpf: "43372251034" } }, res);
+    await handleAuth({ method: "POST", body: { cpf: "92561324354" } }, res);
     assert.equal(res.statusCode, 502);
     assert.deepEqual(res.body, { erro: "Falha na autenticação de serviço com a API" });
   });
@@ -94,7 +94,7 @@ describe("handleAuth", () => {
       consultarClienteFn: async () => ({ status: 400 }),
     });
     const res = mockRes();
-    await handleAuth({ method: "POST", body: { cpf: "43372251034" } }, res);
+    await handleAuth({ method: "POST", body: { cpf: "92561324354" } }, res);
     assert.equal(res.statusCode, 400);
     assert.deepEqual(res.body, { erro: "CPF inválido" });
   });
@@ -105,7 +105,7 @@ describe("handleAuth", () => {
       consultarClienteFn: async () => ({ status: 503 }),
     });
     const res = mockRes();
-    await handleAuth({ method: "POST", body: { cpf: "43372251034" } }, res);
+    await handleAuth({ method: "POST", body: { cpf: "92561324354" } }, res);
     assert.equal(res.statusCode, 502);
     assert.deepEqual(res.body, { erro: "Resposta inesperada da API" });
   });
@@ -118,7 +118,7 @@ describe("handleAuth", () => {
       },
     });
     const res = mockRes();
-    await handleAuth({ method: "POST", body: { cpf: "43372251034" } }, res);
+    await handleAuth({ method: "POST", body: { cpf: "92561324354" } }, res);
     assert.equal(res.statusCode, 502);
     assert.deepEqual(res.body, { erro: "Falha ao consultar a API" });
   });
@@ -132,7 +132,7 @@ describe("handleAuth", () => {
       },
     });
     const res = mockRes();
-    await handleAuth({ method: "POST", body: { cpf: "43372251034" } }, res);
+    await handleAuth({ method: "POST", body: { cpf: "92561324354" } }, res);
     assert.equal(res.statusCode, 500);
     assert.deepEqual(res.body, { erro: "Falha ao emitir token" });
   });
@@ -144,7 +144,7 @@ describe("handleAuth", () => {
       emitirJwtFn: () => "token.jwt.de.teste",
     });
     const res = mockRes();
-    await handleAuth({ method: "POST", body: { cpf: "433.722.510-34" } }, res);
+    await handleAuth({ method: "POST", body: { cpf: "925.613.243-54" } }, res);
     assert.equal(res.statusCode, 200);
     assert.deepEqual(res.body, { token: "token.jwt.de.teste" });
   });
