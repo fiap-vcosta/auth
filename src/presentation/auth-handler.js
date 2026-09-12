@@ -1,12 +1,12 @@
-const { loadConfig } = require("../infrastructure/config");
-const { consultarClientePorDocumento } = require("../infrastructure/gateways/cliente-api-gateway");
-const { emitirJwtCliente } = require("../infrastructure/jwt/jwt-cliente-issuer");
-const { emitirTokenCliente } = require("../application/emitir-token-cliente");
+const { loadConfig } = require("#infrastructure/config.js");
+const { consultarClientePorDocumento } = require("#infrastructure/gateways/cliente-api-gateway.js");
+const { emitirJwtCliente } = require("#infrastructure/jwt/jwt-cliente-issuer.js");
+const { emitirTokenCliente } = require("#application/emitir-token-cliente.js");
 const {
   sendValidationErrors,
   sendProblemDetails,
   sendOk,
-} = require("../infrastructure/http/responses");
+} = require("#infrastructure/http/responses.js");
 
 function createHandleAuth({
   loadConfigFn = loadConfig,
@@ -21,7 +21,7 @@ function createHandleAuth({
     }
 
     if (req.method !== "POST") {
-      sendProblemDetails(res, 405, "Method Not Allowed", {
+      sendProblemDetails(res, 405, {
         detail: "Método não permitido",
       });
       return;
@@ -32,7 +32,7 @@ function createHandleAuth({
       config = loadConfigFn();
     } catch (err) {
       console.error(err.message);
-      sendProblemDetails(res, 500, "Internal Server Error", {
+      sendProblemDetails(res, 500, {
         detail: "Configuração inválida do serviço",
       });
       return;
@@ -59,7 +59,7 @@ function createHandleAuth({
     }
 
     if (result.kind === "not_found") {
-      sendProblemDetails(res, 404, "Not Found");
+      sendProblemDetails(res, 404);
       return;
     }
 
@@ -71,7 +71,7 @@ function createHandleAuth({
       } else {
         console.error(result.detail);
       }
-      sendProblemDetails(res, 502, result.title ?? "Bad Gateway", {
+      sendProblemDetails(res, 502, {
         detail: result.detail,
       });
       return;
@@ -80,7 +80,7 @@ function createHandleAuth({
     if (result.cause) {
       console.error(`${result.detail}: ${result.cause.message}`);
     }
-    sendProblemDetails(res, 500, result.title ?? "Internal Server Error", {
+    sendProblemDetails(res, 500, {
       detail: result.detail,
     });
   };

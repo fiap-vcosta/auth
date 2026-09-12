@@ -1,9 +1,8 @@
 const { describe, it } = require("node:test");
 const assert = require("node:assert/strict");
-const { applyEnvFile } = require("../helpers/load-env");
-const { createHandleAuth } = require("../../src/presentation/auth-handler");
-const { loadConfig } = require("../../src/infrastructure/config");
-const { PROBLEM_TYPES } = require("../../src/infrastructure/http/responses");
+const { applyEnvFile } = require("#test/helpers/load-env.js");
+const { createHandleAuth } = require("#presentation/auth-handler.js");
+const { loadConfig } = require("#infrastructure/config.js");
 
 applyEnvFile();
 
@@ -44,7 +43,7 @@ describe("handleAuth", () => {
     const res = mockRes();
     await handleAuth({ method: "GET" }, res);
     assert.equal(res.statusCode, 405);
-    assert.equal(res.body.type, PROBLEM_TYPES[405]);
+    assert.equal(res.body.type, "about:blank");
     assert.equal(res.body.title, "Method Not Allowed");
   });
 
@@ -69,7 +68,7 @@ describe("handleAuth", () => {
     const res = mockRes();
     await handleAuth({ method: "POST", body: { documento: "92561324354" } }, res);
     assert.equal(res.statusCode, 404);
-    assert.equal(res.body.type, PROBLEM_TYPES[404]);
+    assert.equal(res.body.type, "about:blank");
     assert.equal(res.body.title, "Not Found");
     assert.equal(res.body.status, 404);
   });
@@ -94,7 +93,8 @@ describe("handleAuth", () => {
     const res = mockRes();
     await handleAuth({ method: "POST", body: { documento: "92561324354" } }, res);
     assert.equal(res.statusCode, 502);
-    assert.equal(res.body.type, PROBLEM_TYPES[502]);
+    assert.equal(res.body.type, "about:blank");
+    assert.equal(res.body.title, "Bad Gateway");
   });
 
   it("retorna 500 Problem Details quando a config está inválida", async () => {

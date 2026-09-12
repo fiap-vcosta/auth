@@ -7,6 +7,13 @@
   "engines": {
     "node": "22.23.2"
   },
+  "imports": {
+    "#domain/*": "./src/domain/*",
+    "#application/*": "./src/application/*",
+    "#infrastructure/*": "./src/infrastructure/*",
+    "#presentation/*": "./src/presentation/*",
+    "#test/*": "./test/*"
+  },
   "scripts": {
     "start": "node --env-file-if-exists=.env ./node_modules/@google-cloud/functions-framework/build/src/main.js --target=auth --source=src --port=8081",
     "lint": "eslint .",
@@ -17,6 +24,7 @@
   "dependencies": {
     "@google-cloud/functions-framework": "5.0.5",
     "cpf-cnpj-validator": "2.1.2",
+    "http-problem-details": "0.1.7",
     "jsonwebtoken": "9.0.3"
   },
   "devDependencies": {

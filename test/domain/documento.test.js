@@ -3,7 +3,7 @@ const assert = require("node:assert/strict");
 const {
   normalizeDocumento,
   tryNormalizeValidDocumento,
-} = require("../../src/domain/documento");
+} = require("#domain/documento.js");
 
 describe("documento", () => {
   it("normaliza removendo pontuação de CPF", () => {

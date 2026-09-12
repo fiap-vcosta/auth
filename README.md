@@ -77,7 +77,8 @@ Pasta: [`docs/requestly/`](docs/requestly/)
 | `JWT_CLIENTE_KEY` | Secret HS256 do JWT cliente (mesmo da API) |
 | `JWT_CLIENTE_ISSUER` / `JWT_CLIENTE_AUDIENCE` | `tech-challenge-cliente` |
 | `SERVICE_AUTH_KEY` | Header `X-Service-Key` |
-| `JWT_EXPIRES_IN_SECONDS` | Opcional (padrão `1800`) |
+
+JWT expira em **1800s** (hardcoded).
 
 Deploy GCP = **manual** (`workflow_dispatch`) — próxima entrega.
 

@@ -1,7 +1,7 @@
 const { describe, it } = require("node:test");
 const assert = require("node:assert/strict");
-const { applyEnvFile } = require("../helpers/load-env");
-const { loadConfig, REQUIRED } = require("../../src/infrastructure/config");
+const { applyEnvFile } = require("#test/helpers/load-env.js");
+const { loadConfig, REQUIRED } = require("#infrastructure/config.js");
 
 applyEnvFile();
 
@@ -14,7 +14,6 @@ describe("loadConfig", () => {
     assert.equal(config.jwtClienteIssuer, "tech-challenge-cliente");
     assert.equal(config.jwtClienteAudience, "tech-challenge-cliente");
     assert.equal(config.serviceAuthKey, "local-service-auth-key-change-me");
-    assert.equal(config.jwtExpiresInSeconds, 1800);
   });
 
   it("remove barra final de API_BASE_URL", () => {

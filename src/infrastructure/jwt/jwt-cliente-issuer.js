@@ -1,7 +1,9 @@
 const jwt = require("jsonwebtoken");
 
+const JWT_EXPIRES_IN_SECONDS = 1800;
+
 function emitirJwtCliente(
-  { jwtClienteKey, jwtClienteIssuer, jwtClienteAudience, jwtExpiresInSeconds = 1800 },
+  { jwtClienteKey, jwtClienteIssuer, jwtClienteAudience },
   documento,
 ) {
   return jwt.sign(
@@ -11,9 +13,9 @@ function emitirJwtCliente(
       algorithm: "HS256",
       issuer: jwtClienteIssuer,
       audience: jwtClienteAudience,
-      expiresIn: jwtExpiresInSeconds,
+      expiresIn: JWT_EXPIRES_IN_SECONDS,
     },
   );
 }
 
-module.exports = { emitirJwtCliente };
+module.exports = { emitirJwtCliente, JWT_EXPIRES_IN_SECONDS };

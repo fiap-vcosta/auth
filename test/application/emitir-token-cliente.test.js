@@ -1,6 +1,6 @@
 const { describe, it } = require("node:test");
 const assert = require("node:assert/strict");
-const { emitirTokenCliente } = require("../../src/application/emitir-token-cliente");
+const { emitirTokenCliente } = require("#application/emitir-token-cliente.js");
 
 const config = {
   apiBaseUrl: "http://localhost:8080",
@@ -8,7 +8,6 @@ const config = {
   jwtClienteKey: "local-jwt-cliente-key-change-me-32chars-min",
   jwtClienteIssuer: "tech-challenge-cliente",
   jwtClienteAudience: "tech-challenge-cliente",
-  jwtExpiresInSeconds: 1800,
 };
 
 describe("emitirTokenCliente", () => {
