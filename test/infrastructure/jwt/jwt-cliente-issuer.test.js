@@ -1,12 +1,12 @@
 const { describe, it } = require("node:test");
 const assert = require("node:assert/strict");
 const jwt = require("jsonwebtoken");
-const { applyEnvFile } = require("#test/helpers/load-env.js");
-const { loadConfig } = require("#infrastructure/config.js");
+const { applyEnvFile } = require("@test/helpers/load-env.js");
+const { loadConfig } = require("@infrastructure/config.js");
 const {
   emitirJwtCliente,
   JWT_EXPIRES_IN_SECONDS,
-} = require("#infrastructure/jwt/jwt-cliente-issuer.js");
+} = require("@infrastructure/jwt/jwt-cliente-issuer.js");
 
 applyEnvFile();
 

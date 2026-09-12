@@ -1,4 +1,4 @@
-const { tryNormalizeValidDocumento } = require("#domain/documento.js");
+const { tryNormalizeValidDocumento } = require("@domain/documento.js");
 
 async function emitirTokenCliente(
   { documento: documentoRaw },
