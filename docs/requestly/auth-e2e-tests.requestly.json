@@ -1,0 +1,177 @@
+{
+  "meta": {
+    "version": "1.1.0",
+    "exportedAt": "2026-09-12T19:00:00.000Z",
+    "exportedUsing": "Requestly API Client"
+  },
+  "records": [
+    {
+      "id": "b2000001-auth-0001-4001-8001-000000000001",
+      "name": "auth-e2e-tests",
+      "type": "collection",
+      "parentId": null,
+      "deleted": false,
+      "data": {
+        "auth": {
+          "type": "inherit"
+        }
+      },
+      "rank": "a0",
+      "description": "Suites e2e da Function auth. Pré-requisito: API Compose (:8080) + auth (:8081). Rodar pasta → ⋯ → Run. Collection exploratória: docs/requestly/auth.requestly.json"
+    },
+    {
+      "id": "b2000001-auth-0001-4001-8001-000000000010",
+      "name": "01-emitir-jwt-cliente",
+      "type": "collection",
+      "parentId": "b2000001-auth-0001-4001-8001-000000000001",
+      "deleted": false,
+      "data": {
+        "auth": {
+          "type": "inherit"
+        }
+      },
+      "rank": "a0",
+      "description": "Documento cadastrado → 200 + token; inválido → 400 errors; inexistente → 404 Problem Details."
+    },
+    {
+      "id": "b2000001-auth-0001-4001-8001-000000000011",
+      "name": "00-emitir-token-ok",
+      "type": "api",
+      "parentId": "b2000001-auth-0001-4001-8001-000000000010",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{authUrl}}/",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1726150001001,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"documento\": \"{{documento}}\"\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "inherit"
+        },
+        "scripts": {
+          "preRequest": "if (!rq.environment.get(\"authUrl\")) {\n  rq.environment.set(\"authUrl\", \"http://localhost:8081\");\n}\nif (!rq.environment.get(\"documento\")) {\n  rq.environment.set(\"documento\", \"92561324354\");\n}",
+          "postResponse": "rq.test(\"Emite JWT com 200\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(200);\n});\nvar jsonData = rq.response.json();\nrq.test(\"Resposta tem token\", function () {\n  rq.expect(jsonData).to.have.property(\"token\");\n  rq.expect(jsonData.token).to.be.a(\"string\").and.not.empty;\n});\nrq.environment.set(\"tokenCliente\", jsonData.token);"
+        }
+      },
+      "rank": "a0"
+    },
+    {
+      "id": "b2000001-auth-0001-4001-8001-000000000012",
+      "name": "01-documento-invalido-400",
+      "type": "api",
+      "parentId": "b2000001-auth-0001-4001-8001-000000000010",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{authUrl}}/",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1726150001002,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"documento\": \"111\"\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "inherit"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Documento inválido retorna 400\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(400);\n});\nvar jsonData = rq.response.json();\nrq.test(\"errors no formato da API\", function () {\n  rq.expect(jsonData.errors).to.deep.equal([\"Documento inválido.\"]);\n});"
+        }
+      },
+      "rank": "a1"
+    },
+    {
+      "id": "b2000001-auth-0001-4001-8001-000000000013",
+      "name": "02-documento-inexistente-404",
+      "type": "api",
+      "parentId": "b2000001-auth-0001-4001-8001-000000000010",
+      "deleted": false,
+      "data": {
+        "type": "http",
+        "request": {
+          "url": "{{authUrl}}/",
+          "method": "POST",
+          "headers": [
+            {
+              "id": 1726150001003,
+              "key": "Content-Type",
+              "value": "application/json",
+              "isEnabled": true,
+              "description": ""
+            }
+          ],
+          "queryParams": [],
+          "pathVariables": [],
+          "body": {
+            "contentType": "raw",
+            "raw": "{\n  \"documento\": \"11144477735\"\n}",
+            "rawContentType": "application/json"
+          },
+          "contentType": "raw"
+        },
+        "auth": {
+          "type": "inherit"
+        },
+        "scripts": {
+          "postResponse": "rq.test(\"Documento inexistente retorna 404\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(404);\n});\nvar jsonData = rq.response.json();\nrq.test(\"Problem Details\", function () {\n  rq.expect(jsonData.title).to.equal(\"Not Found\");\n  rq.expect(jsonData.status).to.equal(404);\n  rq.expect(jsonData.type).to.be.a(\"string\");\n  rq.expect(jsonData.traceId).to.be.a(\"string\");\n});"
+        }
+      },
+      "rank": "a2"
+    }
+  ],
+  "environments": [
+    {
+      "id": "e2000001-auth-0001-4001-8001-000000000001",
+      "name": "Local",
+      "variables": {
+        "authUrl": {
+          "type": "string",
+          "syncValue": "http://localhost:8081"
+        },
+        "apiUrl": {
+          "type": "string",
+          "syncValue": "http://localhost:8080"
+        },
+        "documento": {
+          "type": "string",
+          "syncValue": "92561324354"
+        },
+        "tokenCliente": {
+          "type": "secret",
+          "syncValue": ""
+        }
+      }
+    }
+  ],
+  "packages": []
+}

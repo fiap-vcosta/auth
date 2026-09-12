@@ -1,8 +1,8 @@
 const fs = require("node:fs");
 const path = require("node:path");
 
-function applyEnvFile(relativePath) {
-  const filePath = path.resolve(__dirname, relativePath);
+function applyEnvFile(relativeFromRoot = ".env.test") {
+  const filePath = path.resolve(process.cwd(), relativeFromRoot);
   const text = fs.readFileSync(filePath, "utf8");
 
   for (const rawLine of text.split(/\r?\n/)) {

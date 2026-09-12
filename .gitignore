@@ -21,6 +21,9 @@ Thumbs.db
 .vscode/launch.json
 .vscode/tasks.json
 
+# Docker
+docker-compose.override.yml
+
 # Logs / coverage
 logs/
 *.log
