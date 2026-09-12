@@ -14,33 +14,68 @@ Valida CPF via API (HTTPS + secret de serviço) e emite JWT de cliente com secre
 
 Ver [`docs/README.md`](docs/README.md).
 
-## Desenvolvimento local (scaffold)
+## Contrato HTTP (local)
+
+`POST /` com body `{ "cpf": "43372251034" }` → `{ "token": "<JWT>" }`.
+
+A Function chama `GET {API_BASE_URL}/api/system/clientes/por-documento/{cpf}` com header `X-Service-Key`.
+
+Validação local do CPF: **11 dígitos** (após normalizar), sem rejeitar os CPFs do seed da API (alguns não passam em checksum estrito — a API decide existência/validade).
+
+## Desenvolvimento local
+
+### 1. API (repo `api`)
 
 ```bash
-nvm install   # se ainda não tiver o pin do .nvmrc
+cd ../api
+cp .env.example .env   # se ainda não tiver
+docker compose --profile app up -d --build
+curl -sS http://localhost:8080/health
+```
+
+Use os **mesmos** valores de `JWT_CLIENTE_*` e `SERVICE_AUTH_KEY` no `.env` deste repo.
+
+### 2. Auth
+
+```bash
 nvm use
 cp .env.example .env
 npm ci
 npm run lint
 npm test
 npm run test:coverage
-npm start     # http://localhost:8081 — handler ainda retorna 501 (lógica na próxima entrega)
+```
+
+Subir a Function (escolha um):
+
+```bash
+npm start
+# ou
+docker compose up -d --build
+```
+
+Smoke (API precisa estar no ar; CPF seed `43372251034`):
+
+```bash
+npm run smoke:local
+# ou: ./scripts/smoke-local.sh 43372251034
 ```
 
 - `.env.example` — modelo local (copiar para `.env`)
-- `.env.test` — valores dummy usados pelos testes (`test/config.test.js`)
+- `.env.test` — valores dummy dos testes
 - `.env` — local, **não** versionado
-
-Variáveis de ambiente obrigatórias (validadas por `src/config.js`; uso completo no handler vem depois):
+- Auth em **`:8081`**; API em **`:8080`**
+- No Docker, `API_BASE_URL` padrão é `http://host.docker.internal:8080` (Linux: `extra_hosts` no Compose)
 
 | Variável | Papel |
 |----------|--------|
-| `API_BASE_URL` | Base da API (ex. `http://localhost:8080`) |
-| `JWT_CLIENTE_KEY` | Secret HS256 do JWT cliente (mesmo material que a API valida) |
-| `JWT_CLIENTE_ISSUER` / `JWT_CLIENTE_AUDIENCE` | Claims alinhados à API (`tech-challenge-cliente`) |
-| `SERVICE_AUTH_KEY` | Valor do header `X-Service-Key` na chamada à API |
+| `API_BASE_URL` | Base da API |
+| `JWT_CLIENTE_KEY` | Secret HS256 do JWT cliente (mesmo da API) |
+| `JWT_CLIENTE_ISSUER` / `JWT_CLIENTE_AUDIENCE` | `tech-challenge-cliente` |
+| `SERVICE_AUTH_KEY` | Header `X-Service-Key` |
+| `JWT_EXPIRES_IN_SECONDS` | Opcional (padrão `1800`) |
 
-Deploy GCP = **manual** (`workflow_dispatch`) — ainda não neste scaffold.
+Deploy GCP = **manual** (`workflow_dispatch`) — próxima entrega.
 
 ## Agentes
 

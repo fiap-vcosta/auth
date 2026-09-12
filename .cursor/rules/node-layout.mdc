@@ -5,8 +5,9 @@ alwaysApply: true
 
 # Layout e estilo (`auth`)
 
-- Entry HTTP: `src/index.js` registra o target `auth`; lógica em `src/handler.js`; env em `src/config.js`.
+- Entry HTTP: `src/index.js` registra o target `auth`; lógica em `src/handler.js`; env em `src/config.js`; CPF em `src/cpf.js`; API em `src/api-client.js`; JWT em `src/jwt.js`.
 - Env: `.env.example` (modelo), `.env.test` (testes, versionado), `.env` (local, gitignored).
+- Local: Compose/`Dockerfile` na porta **8081**; API no repo `api` em **8080** (`host.docker.internal`).
 - Testes em `test/` com `node --test` + `--env-file=.env.test`; cobertura via `c8` (`npm run test:coverage`).
 - ESLint flat: `@eslint/js` recommended + `eslint-plugin-n` recommended.
 - Mensagens de erro / logs: **pt-BR**.

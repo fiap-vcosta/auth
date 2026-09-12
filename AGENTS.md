@@ -24,6 +24,7 @@ Cloud Function (GCP) de autenticação de **cliente**: CPF → JWT. Parte da org
 - Dois JWT secrets (staff na API × cliente aqui)
 - Opção B: Function → API por HTTPS + secret de serviço; sem VPC
 - Deploy caro = manual; merge em `main` não liga nuvem
+- Local: API Compose `:8080` + auth `:8081` (Compose ou `npm start`); mesmos `JWT_CLIENTE_*` / `SERVICE_AUTH_KEY`
 
 ## Layout
 
@@ -31,7 +32,12 @@ Cloud Function (GCP) de autenticação de **cliente**: CPF → JWT. Parte da org
 |---------|--------|
 | `src/index.js` | Registra o target HTTP `auth` no Functions Framework |
 | `src/handler.js` | Handler HTTP (CPF → JWT) |
+| `src/cpf.js` | Normalização / validação de CPF |
+| `src/api-client.js` | GET cliente por documento na API |
+| `src/jwt.js` | Emissão do JWT cliente (HS256) |
 | `src/config.js` | Lê e valida env obrigatório |
+| `docker-compose.yml` / `Dockerfile` | Ambiente local na porta 8081 |
+| `scripts/smoke-local.sh` | Smoke CPF → JWT |
 | `test/` | Testes (`node --test`) |
 | `.github/workflows/ci.yml` | lint + test |
 
@@ -44,5 +50,7 @@ npm ci
 npm run lint
 npm test
 npm run test:coverage
-npm start   # porta 8081
+npm start                    # :8081
+docker compose up -d --build # alternativa
+npm run smoke:local          # API precisa estar no ar
 ```

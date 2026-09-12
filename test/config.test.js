@@ -14,6 +14,7 @@ describe("loadConfig", () => {
     assert.equal(config.jwtClienteIssuer, "tech-challenge-cliente");
     assert.equal(config.jwtClienteAudience, "tech-challenge-cliente");
     assert.equal(config.serviceAuthKey, "local-service-auth-key-change-me");
+    assert.equal(config.jwtExpiresInSeconds, 1800);
   });
 
   it("remove barra final de API_BASE_URL", () => {

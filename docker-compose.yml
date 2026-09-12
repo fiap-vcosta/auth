@@ -1,0 +1,14 @@
+services:
+  auth:
+    build: .
+    ports:
+      - "8081:8081"
+    environment:
+      API_BASE_URL: ${API_BASE_URL:-http://host.docker.internal:8080}
+      JWT_CLIENTE_KEY: ${JWT_CLIENTE_KEY:?JWT_CLIENTE_KEY is required}
+      JWT_CLIENTE_ISSUER: ${JWT_CLIENTE_ISSUER:-tech-challenge-cliente}
+      JWT_CLIENTE_AUDIENCE: ${JWT_CLIENTE_AUDIENCE:-tech-challenge-cliente}
+      SERVICE_AUTH_KEY: ${SERVICE_AUTH_KEY:?SERVICE_AUTH_KEY is required}
+      JWT_EXPIRES_IN_SECONDS: ${JWT_EXPIRES_IN_SECONDS:-1800}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
