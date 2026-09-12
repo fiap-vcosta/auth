@@ -39,6 +39,7 @@ Cloud Function (GCP) de autenticação de **cliente**: CPF → JWT. Parte da org
 
 ```bash
 nvm use
+cp .env.example .env
 npm ci
 npm run lint
 npm test

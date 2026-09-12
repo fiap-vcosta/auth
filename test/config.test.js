@@ -1,20 +1,28 @@
 const { describe, it } = require("node:test");
 const assert = require("node:assert/strict");
+const { applyEnvFile } = require("./load-env");
 const { loadConfig, REQUIRED } = require("../src/config");
 
+applyEnvFile("../.env.test");
+
 describe("loadConfig", () => {
-  it("retorna config quando todas as variáveis obrigatórias estão definidas", () => {
+  it("retorna config a partir do .env.test", () => {
+    const config = loadConfig();
+
+    assert.equal(config.apiBaseUrl, "http://localhost:8080");
+    assert.equal(config.jwtClienteKey, "local-jwt-cliente-key-change-me-32chars-min");
+    assert.equal(config.jwtClienteIssuer, "tech-challenge-cliente");
+    assert.equal(config.jwtClienteAudience, "tech-challenge-cliente");
+    assert.equal(config.serviceAuthKey, "local-service-auth-key-change-me");
+  });
+
+  it("remove barra final de API_BASE_URL", () => {
     const config = loadConfig({
-      API_BASE_URL: "http://localhost:8080/",
-      JWT_CLIENTE_KEY: "local-jwt-cliente-key-change-me-32chars-min",
-      JWT_CLIENTE_ISSUER: "tech-challenge-cliente",
-      JWT_CLIENTE_AUDIENCE: "tech-challenge-cliente",
-      SERVICE_AUTH_KEY: "local-service-auth-key-change-me",
+      ...Object.fromEntries(REQUIRED.map((key) => [key, process.env[key]])),
+      API_BASE_URL: `${process.env.API_BASE_URL}/`,
     });
 
     assert.equal(config.apiBaseUrl, "http://localhost:8080");
-    assert.equal(config.jwtClienteIssuer, "tech-challenge-cliente");
-    assert.equal(config.serviceAuthKey, "local-service-auth-key-change-me");
   });
 
   it("lança erro listando as chaves ausentes", () => {

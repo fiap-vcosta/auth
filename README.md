@@ -19,12 +19,17 @@ Ver [`docs/README.md`](docs/README.md).
 ```bash
 nvm install   # se ainda não tiver o pin do .nvmrc
 nvm use
+cp .env.example .env
 npm ci
 npm run lint
 npm test
 npm run test:coverage
 npm start     # http://localhost:8081 — handler ainda retorna 501 (lógica na próxima entrega)
 ```
+
+- `.env.example` — modelo local (copiar para `.env`)
+- `.env.test` — valores dummy usados pelos testes (`test/config.test.js`)
+- `.env` — local, **não** versionado
 
 Variáveis de ambiente obrigatórias (validadas por `src/config.js`; uso completo no handler vem depois):
 
