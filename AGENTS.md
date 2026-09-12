@@ -6,7 +6,7 @@ Cloud Function (GCP) de autenticação de **cliente**: CPF → JWT. Parte da org
 
 1. Conferir ADRs em [`docs/adrs/`](docs/adrs/) (e requisitos da `api` quando o contrato HTTP for tocado)
 2. Espelhar padrões das pastas vizinhas; não inventar estrutura paralela
-3. Não implementar feature futura sem decisão fechada (runtime, contrato HTTP, secrets)
+3. Não inventar feature fora do contrato CPF → API → JWT já fechado nas ADRs
 4. **Git:** nunca commit/push direto em `main` — branch → PR → merge (ver [`.cursor/rules/git-workflow.mdc`](.cursor/rules/git-workflow.mdc))
 
 ## Responsabilidade
@@ -19,10 +19,30 @@ Cloud Function (GCP) de autenticação de **cliente**: CPF → JWT. Parte da org
 
 ## Regras canônicas (resumo)
 
+- Runtime: **Node.js 22.23.2** (`.nvmrc`) + Functions Framework; Cloud Functions 2nd gen
+- Mensagens de erro / logs voltados ao usuário: **pt-BR**
 - Dois JWT secrets (staff na API × cliente aqui)
 - Opção B: Function → API por HTTPS + secret de serviço; sem VPC
 - Deploy caro = manual; merge em `main` não liga nuvem
 
+## Layout
+
+| Caminho | Papel |
+|---------|--------|
+| `src/index.js` | Registra o target HTTP `auth` no Functions Framework |
+| `src/handler.js` | Handler HTTP (CPF → JWT) |
+| `src/config.js` | Lê e valida env obrigatório |
+| `test/` | Testes (`node --test`) |
+| `.github/workflows/ci.yml` | lint + test |
+
 ## Comandos
 
-Definir após o scaffold (runtime escolhido na execução). Preferir scripts/`Makefile` documentados no README.
+```bash
+nvm use
+cp .env.example .env
+npm ci
+npm run lint
+npm test
+npm run test:coverage
+npm start   # porta 8081
+```

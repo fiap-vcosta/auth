@@ -6,6 +6,7 @@ alwaysApply: true
 # Contexto e perguntas
 
 - Nunca assumir requisitos, escopo ou trade-offs quando estiverem ambíguos ou incompletos.
-- Antes de decisões que mudem contrato HTTP da Function, secrets, integração com a API ou runtime: explicitar a dúvida e perguntar.
+- Antes de decisões que mudem contrato HTTP da Function, secrets ou integração com a API: explicitar a dúvida e perguntar.
+- Runtime já fechado: **Node.js 22.23.2** + Functions Framework (não reabrir Node vs Python sem pedido explícito).
 - Preferir 1–2 perguntas críticas por vez; propor opções concretas quando houver caminhos válidos distintos.
 - Canon de produto: ADRs em `docs/adrs/` deste repo e `docs/01_requisitos.md` da `api`; não inventar escopo além disso.

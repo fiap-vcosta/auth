@@ -1,0 +1,151 @@
+name: CI
+
+on:
+  push:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: ESLint
+        id: eslint
+        run: |
+          set +e
+          npx eslint . --format json --output-file eslint-report.json
+          code=$?
+          set -e
+          if [ ! -f eslint-report.json ]; then
+            echo "[]" > eslint-report.json
+          fi
+          exit $code
+        continue-on-error: true
+
+      - name: Summarize ESLint results
+        if: always()
+        run: |
+          set -euo pipefail
+          REPORT=eslint-report.json
+          if [ ! -f "$REPORT" ]; then
+            echo "Relatório ESLint não encontrado: $REPORT"
+            exit 1
+          fi
+
+          ERRORS=$(jq '[.[].errorCount] | add // 0' "$REPORT")
+          WARNINGS=$(jq '[.[].warningCount] | add // 0' "$REPORT")
+
+          {
+            echo "## ESLint"
+            echo ""
+            echo "| Severidade | Quantidade |"
+            echo "|------------|-----------:|"
+            echo "| Error | ${ERRORS} |"
+            echo "| Warning | ${WARNINGS} |"
+            echo ""
+            echo "Detalhes no artifact \`eslint-report\`."
+            if [ "$ERRORS" -gt 0 ]; then
+              echo ""
+              echo "### Errors (amostra)"
+              echo ""
+              jq -r '.[] | .filePath as $f | .messages[]? | select(.severity == 2) | "- `\(.ruleId // "unknown")` \($f): \(.message)"' "$REPORT" | head -50 || true
+            fi
+            if [ "$WARNINGS" -gt 0 ]; then
+              echo ""
+              echo "### Warnings (amostra)"
+              echo ""
+              jq -r '.[] | .filePath as $f | .messages[]? | select(.severity == 1) | "- `\(.ruleId // "unknown")` \($f): \(.message)"' "$REPORT" | head -30 || true
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [ "$ERRORS" -gt 0 ]; then
+            echo "::error::ESLint encontrou ${ERRORS} error(s). Veja o Job Summary / artifact."
+          fi
+          if [ "$WARNINGS" -gt 0 ]; then
+            echo "::error::ESLint encontrou ${WARNINGS} warning(s). Veja o Job Summary / artifact."
+          fi
+          if [ "$ERRORS" -gt 0 ] || [ "$WARNINGS" -gt 0 ]; then
+            exit 1
+          fi
+
+      - name: Upload ESLint report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: eslint-report
+          path: eslint-report.json
+          if-no-files-found: ignore
+          retention-days: 1
+
+  unit-tests:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Run unit tests with coverage gate
+        run: npm run test:coverage
+
+      - name: Write coverage Job Summary
+        if: always()
+        run: |
+          set -euo pipefail
+          SUMMARY=coverage/coverage-summary.json
+          if [ ! -f "$SUMMARY" ]; then
+            echo "Resumo de cobertura não encontrado." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          {
+            echo "## Cobertura dos testes unitários"
+            echo ""
+            echo "| Métrica | Cobertura |"
+            echo "|---------|----------:|"
+            jq -r '
+              .total
+              | [
+                  ["Lines", (.lines.pct|tostring) + "%"],
+                  ["Statements", (.statements.pct|tostring) + "%"],
+                  ["Functions", (.functions.pct|tostring) + "%"],
+                  ["Branches", (.branches.pct|tostring) + "%"]
+                ]
+              | .[]
+              | "| \(.[0]) | \(.[1]) |"
+            ' "$SUMMARY"
+            echo ""
+            echo "Detalhes no artifact \`coverage-report\`."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-report
+          path: coverage/
+          if-no-files-found: warn
+          retention-days: 1

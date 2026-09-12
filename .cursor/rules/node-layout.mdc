@@ -1,0 +1,16 @@
+---
+description: Layout e estilo Node do repo auth
+alwaysApply: true
+---
+
+# Layout e estilo (`auth`)
+
+- Entry HTTP: `src/index.js` registra o target `auth`; lógica em `src/handler.js`; env em `src/config.js`.
+- Env: `.env.example` (modelo), `.env.test` (testes, versionado), `.env` (local, gitignored).
+- Testes em `test/` com `node --test` + `--env-file=.env.test`; cobertura via `c8` (`npm run test:coverage`).
+- ESLint flat: `@eslint/js` recommended + `eslint-plugin-n` recommended.
+- Mensagens de erro / logs: **pt-BR**.
+- **Sem comentários narrativos** no JS — nomes e estrutura bastam.
+- `.gitignore` agrupado por seção (`# Node`, `# Env`, `# OS`, …).
+- `package.json` com versões **exatas**; `engines.node` = pin do `.nvmrc`.
+- README: propósito, stack, comandos locais; sem pastas só do workspace `local/` nem numeração de checklist interno.
