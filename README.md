@@ -57,9 +57,9 @@ docker compose up -d --build
 
 ### 3. Requestly (smoke HTTP)
 
-Ver [`docs/requestly/README.md`](docs/requestly/README.md).
+Pasta: [`docs/requestly/`](docs/requestly/)
 
-1. Importe `docs/requestly/auth.requestly.json` (exploratória) e/ou `auth-e2e-tests.requestly.json`
+1. Importe `auth.requestly.json` (exploratória) e/ou `auth-e2e-tests.requestly.json`
 2. Environment **Local** (`authUrl=http://localhost:8081`, `cpf=92561324354`)
 3. Rode `00-emitir-jwt / emitir-token` ou a pasta e2e no Collection Runner
 
