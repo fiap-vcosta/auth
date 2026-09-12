@@ -5,7 +5,7 @@ function emitirJwtCliente(
   documento,
 ) {
   return jwt.sign(
-    { cpf: documento },
+    { documento },
     jwtClienteKey,
     {
       algorithm: "HS256",

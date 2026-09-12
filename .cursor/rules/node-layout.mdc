@@ -5,14 +5,22 @@ alwaysApply: true
 
 # Layout e estilo (`auth`)
 
-- Entry HTTP: `src/index.js` registra o target `auth`; lógica em `src/handler.js`; env em `src/config.js`; documento em `src/documento.js` (`cpf-cnpj-validator`); API em `src/api-client.js`; JWT em `src/jwt.js` (claim `cpf` = documento, contrato da API).
+- Camadas mínimas (Function pequena; sem DI pesada):
+  - `src/domain/` — regras puras (documento)
+  - `src/application/` — caso de uso emitir token
+  - `src/infrastructure/` — config, gateway HTTP, JWT, responses
+  - `src/presentation/` — handler HTTP
+  - `src/index.js` — registra o target `auth` no Functions Framework
+- Testes em `test/` **espelhando** `src/` (`test/domain/...`, `test/application/...`, …).
 - Env: `.env.example` (modelo), `.env.test` (testes, versionado), `.env` (local, gitignored).
 - Local: Compose/`Dockerfile` na porta **8081**; API no repo `api` em **8080** (`host.docker.internal`).
 - Smoke HTTP: collections em `docs/requestly/` (Requestly), não scripts shell.
-- Testes em `test/` com `node --test` + `--env-file=.env.test`; cobertura via `c8` (`npm run test:coverage`).
+- Body HTTP: só `{ "documento": "..." }` (CPF ou CNPJ); JWT claim `documento`.
+- Respostas: validação `{ "errors": [...] }`; demais erros Problem Details (RFC 9110), como na API.
+- Testes com `node --test` + `--env-file=.env.test`; cobertura via `c8`.
 - ESLint flat: `@eslint/js` recommended + `eslint-plugin-n` recommended.
 - Mensagens de erro / logs: **pt-BR**.
-- **Sem comentários narrativos** no JS — nomes e estrutura bastam.
+- **Sem comentários narrativos** no JS.
 - `.gitignore` agrupado por seção (`# Node`, `# Env`, `# OS`, …).
 - `package.json` com versões **exatas**; `engines.node` = pin do `.nvmrc`.
 - README: propósito, stack, comandos locais; sem pastas só do workspace `local/` nem numeração de checklist interno.

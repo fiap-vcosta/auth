@@ -1,6 +1,9 @@
 const { describe, it } = require("node:test");
 const assert = require("node:assert/strict");
-const { normalizeDocumento, tryNormalizeValidDocumento } = require("../src/documento");
+const {
+  normalizeDocumento,
+  tryNormalizeValidDocumento,
+} = require("../../src/domain/documento");
 
 describe("documento", () => {
   it("normaliza removendo pontuação de CPF", () => {

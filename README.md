@@ -16,9 +16,11 @@ Ver [`docs/README.md`](docs/README.md).
 
 ## Contrato HTTP (local)
 
-`POST /` com body `{ "documento": "92561324354" }` (alias `cpf` aceito) → `{ "token": "<JWT>" }`.
+`POST /` com body `{ "documento": "92561324354" }` → `{ "token": "<JWT>" }`.
 
-Aceita **CPF ou CNPJ** válidos (`cpf-cnpj-validator`, no espírito da `CpfCnpjLibrary` da API). O JWT mantém o claim `cpf` (contrato da API) com o documento normalizado.
+Aceita **CPF ou CNPJ** válidos (`cpf-cnpj-validator`). O JWT usa claim **`documento`** (contrato alinhado à API).
+
+Erros de validação: `{ "errors": ["Documento inválido."] }`. Cliente inexistente: Problem Details **404**.
 
 A Function chama `GET {API_BASE_URL}/api/system/clientes/por-documento/{documento}` com header `X-Service-Key`.
 

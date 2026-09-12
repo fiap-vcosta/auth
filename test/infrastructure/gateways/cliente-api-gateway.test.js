@@ -1,6 +1,8 @@
 const { describe, it, mock } = require("node:test");
 const assert = require("node:assert/strict");
-const { consultarClientePorDocumento } = require("../src/api-client");
+const {
+  consultarClientePorDocumento,
+} = require("../../../src/infrastructure/gateways/cliente-api-gateway");
 
 describe("consultarClientePorDocumento", () => {
   it("chama a API com X-Service-Key e documento na URL", async () => {

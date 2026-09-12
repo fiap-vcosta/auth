@@ -31,7 +31,7 @@
         }
       },
       "rank": "a0",
-      "description": "Documento cadastrado → 200 + token; inválido → 400; inexistente → 401."
+      "description": "Documento cadastrado → 200 + token; inválido → 400 errors; inexistente → 404 Problem Details."
     },
     {
       "id": "b2000001-auth-0001-4001-8001-000000000011",
@@ -105,14 +105,14 @@
           "type": "inherit"
         },
         "scripts": {
-          "postResponse": "rq.test(\"Documento inválido retorna 400\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(400);\n});\nvar jsonData = rq.response.json();\nrq.test(\"Mensagem em pt-BR\", function () {\n  rq.expect(jsonData.erro).to.equal(\"Documento inválido\");\n});"
+          "postResponse": "rq.test(\"Documento inválido retorna 400\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(400);\n});\nvar jsonData = rq.response.json();\nrq.test(\"errors no formato da API\", function () {\n  rq.expect(jsonData.errors).to.deep.equal([\"Documento inválido.\"]);\n});"
         }
       },
       "rank": "a1"
     },
     {
       "id": "b2000001-auth-0001-4001-8001-000000000013",
-      "name": "02-documento-inexistente-401",
+      "name": "02-documento-inexistente-404",
       "type": "api",
       "parentId": "b2000001-auth-0001-4001-8001-000000000010",
       "deleted": false,
@@ -143,7 +143,7 @@
           "type": "inherit"
         },
         "scripts": {
-          "postResponse": "rq.test(\"CPF inexistente retorna 401\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(401);\n});\nvar jsonData = rq.response.json();\nrq.test(\"Mensagem genérica sem vazar dados\", function () {\n  rq.expect(jsonData.erro).to.equal(\"Não foi possível autenticar o cliente\");\n});"
+          "postResponse": "rq.test(\"Documento inexistente retorna 404\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(404);\n});\nvar jsonData = rq.response.json();\nrq.test(\"Problem Details\", function () {\n  rq.expect(jsonData.title).to.equal(\"Not Found\");\n  rq.expect(jsonData.status).to.equal(404);\n  rq.expect(jsonData.type).to.be.a(\"string\");\n  rq.expect(jsonData.traceId).to.be.a(\"string\");\n});"
         }
       },
       "rank": "a2"

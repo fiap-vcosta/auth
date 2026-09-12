@@ -1,9 +1,9 @@
 const { describe, it } = require("node:test");
 const assert = require("node:assert/strict");
-const { applyEnvFile } = require("./load-env");
-const { loadConfig, REQUIRED } = require("../src/config");
+const { applyEnvFile } = require("../helpers/load-env");
+const { loadConfig, REQUIRED } = require("../../src/infrastructure/config");
 
-applyEnvFile("../.env.test");
+applyEnvFile();
 
 describe("loadConfig", () => {
   it("retorna config a partir do .env.test", () => {
