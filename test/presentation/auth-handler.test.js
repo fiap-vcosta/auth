@@ -1,8 +1,8 @@
 const { describe, it } = require("node:test");
 const assert = require("node:assert/strict");
-const { applyEnvFile } = require("@test/helpers/load-env.js");
-const { createHandleAuth } = require("@presentation/auth-handler.js");
-const { loadConfig } = require("@infrastructure/config.js");
+const { applyEnvFile } = require("#test/helpers/load-env.js");
+const { createHandleAuth } = require("#presentation/auth-handler.js");
+const { loadConfig } = require("#infrastructure/config.js");
 
 applyEnvFile();
 

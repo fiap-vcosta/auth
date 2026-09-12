@@ -7,8 +7,14 @@
   "engines": {
     "node": "22.23.2"
   },
+  "imports": {
+    "#domain/*": "./src/domain/*",
+    "#application/*": "./src/application/*",
+    "#infrastructure/*": "./src/infrastructure/*",
+    "#presentation/*": "./src/presentation/*",
+    "#test/*": "./test/*"
+  },
   "scripts": {
-    "postinstall": "node scripts/link-aliases.js",
     "start": "node --env-file-if-exists=.env ./node_modules/@google-cloud/functions-framework/build/src/main.js --target=auth --source=src --port=8081",
     "lint": "eslint .",
     "lint:report": "eslint . --format json --output-file eslint-report.json",

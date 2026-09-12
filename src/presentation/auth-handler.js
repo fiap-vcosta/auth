@@ -1,12 +1,12 @@
-const { loadConfig } = require("@infrastructure/config.js");
-const { consultarClientePorDocumento } = require("@infrastructure/gateways/cliente-api-gateway.js");
-const { emitirJwtCliente } = require("@infrastructure/jwt/jwt-cliente-issuer.js");
-const { emitirTokenCliente } = require("@application/emitir-token-cliente.js");
+const { loadConfig } = require("#infrastructure/config.js");
+const { consultarClientePorDocumento } = require("#infrastructure/gateways/cliente-api-gateway.js");
+const { emitirJwtCliente } = require("#infrastructure/jwt/jwt-cliente-issuer.js");
+const { emitirTokenCliente } = require("#application/emitir-token-cliente.js");
 const {
   sendValidationErrors,
   sendProblemDetails,
   sendOk,
-} = require("@infrastructure/http/responses.js");
+} = require("#infrastructure/http/responses.js");
 
 function createHandleAuth({
   loadConfigFn = loadConfig,

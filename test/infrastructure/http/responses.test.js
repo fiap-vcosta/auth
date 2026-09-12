@@ -3,7 +3,7 @@ const assert = require("node:assert/strict");
 const {
   sendValidationErrors,
   sendProblemDetails,
-} = require("@infrastructure/http/responses.js");
+} = require("#infrastructure/http/responses.js");
 
 function mockRes() {
   return {

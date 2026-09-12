@@ -1,6 +1,6 @@
 const { describe, it } = require("node:test");
 const assert = require("node:assert/strict");
-const { emitirTokenCliente } = require("@application/emitir-token-cliente.js");
+const { emitirTokenCliente } = require("#application/emitir-token-cliente.js");
 
 const config = {
   apiBaseUrl: "http://localhost:8080",

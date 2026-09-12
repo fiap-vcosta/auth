@@ -24,21 +24,6 @@ module.exports = [
           allowModules: ["@eslint/js", "eslint-plugin-n", "globals"],
         },
       ],
-      "n/no-extraneous-require": [
-        "error",
-        {
-          allowModules: [
-            "@domain/documento.js",
-            "@application/emitir-token-cliente.js",
-            "@presentation/auth-handler.js",
-            "@infrastructure/config.js",
-            "@infrastructure/gateways",
-            "@infrastructure/jwt",
-            "@infrastructure/http",
-            "@test/helpers",
-          ],
-        },
-      ],
     },
   },
 ];

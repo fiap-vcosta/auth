@@ -1,7 +1,7 @@
 const { describe, it } = require("node:test");
 const assert = require("node:assert/strict");
-const { applyEnvFile } = require("@test/helpers/load-env.js");
-const { loadConfig, REQUIRED } = require("@infrastructure/config.js");
+const { applyEnvFile } = require("#test/helpers/load-env.js");
+const { loadConfig, REQUIRED } = require("#infrastructure/config.js");
 
 applyEnvFile();
 
