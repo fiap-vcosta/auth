@@ -31,7 +31,7 @@
         }
       },
       "rank": "a0",
-      "description": "CPF cadastrado → 200 + token; inválido → 400; inexistente → 401."
+      "description": "Documento cadastrado → 200 + token; inválido → 400; inexistente → 401."
     },
     {
       "id": "b2000001-auth-0001-4001-8001-000000000011",
@@ -105,7 +105,7 @@
           "type": "inherit"
         },
         "scripts": {
-          "postResponse": "rq.test(\"CPF inválido retorna 400\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(400);\n});\nvar jsonData = rq.response.json();\nrq.test(\"Mensagem em pt-BR\", function () {\n  rq.expect(jsonData.erro).to.equal(\"CPF inválido\");\n});"
+          "postResponse": "rq.test(\"Documento inválido retorna 400\", function () {\n  rq.expect((rq.response.code != null ? rq.response.code : rq.response.status)).to.equal(400);\n});\nvar jsonData = rq.response.json();\nrq.test(\"Mensagem em pt-BR\", function () {\n  rq.expect(jsonData.erro).to.equal(\"Documento inválido\");\n});"
         }
       },
       "rank": "a1"
@@ -162,7 +162,7 @@
           "type": "string",
           "syncValue": "http://localhost:8080"
         },
-        "cpf": {
+        "documento": {
           "type": "string",
           "syncValue": "92561324354"
         },

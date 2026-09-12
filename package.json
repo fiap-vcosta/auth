@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@google-cloud/functions-framework": "5.0.5",
+    "cpf-cnpj-validator": "2.1.2",
     "jsonwebtoken": "9.0.3"
   },
   "devDependencies": {

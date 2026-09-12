@@ -17,7 +17,7 @@
         }
       },
       "rank": "a0",
-      "description": "Collection exploratória da Function auth (CPF → JWT). Environment: authUrl (default http://localhost:8081) e cpf. Suites e2e: docs/requestly/auth-e2e-tests.requestly.json"
+      "description": "Collection exploratória da Function auth (documento (CPF/CNPJ) → JWT). Environment: authUrl (default http://localhost:8081) e documento. Suites e2e: docs/requestly/auth-e2e-tests.requestly.json"
     },
     {
       "id": "a1000001-auth-0001-4001-8001-000000000010",
@@ -31,7 +31,7 @@
         }
       },
       "rank": "a0",
-      "description": "POST / com CPF → JWT cliente. Pré-requisito: API em :8080 e auth em :8081; mesmos JWT_CLIENTE_* / SERVICE_AUTH_KEY."
+      "description": "POST / com documento (CPF/CNPJ) → JWT cliente. Pré-requisito: API em :8080 e auth em :8081; mesmos JWT_CLIENTE_* / SERVICE_AUTH_KEY."
     },
     {
       "id": "a1000001-auth-0001-4001-8001-000000000011",
@@ -83,7 +83,7 @@
         }
       },
       "rank": "a1",
-      "description": "Casos manuais (CPF inválido / inexistente)."
+      "description": "Casos manuais (Documento inválido / inexistente)."
     },
     {
       "id": "a1000001-auth-0001-4001-8001-000000000021",
@@ -169,7 +169,7 @@
           "type": "string",
           "syncValue": "http://localhost:8080"
         },
-        "cpf": {
+        "documento": {
           "type": "string",
           "syncValue": "92561324354"
         },

@@ -5,7 +5,7 @@ alwaysApply: true
 
 # Layout e estilo (`auth`)
 
-- Entry HTTP: `src/index.js` registra o target `auth`; lógica em `src/handler.js`; env em `src/config.js`; CPF em `src/cpf.js`; API em `src/api-client.js`; JWT em `src/jwt.js`.
+- Entry HTTP: `src/index.js` registra o target `auth`; lógica em `src/handler.js`; env em `src/config.js`; documento em `src/documento.js` (`cpf-cnpj-validator`); API em `src/api-client.js`; JWT em `src/jwt.js` (claim `cpf` = documento, contrato da API).
 - Env: `.env.example` (modelo), `.env.test` (testes, versionado), `.env` (local, gitignored).
 - Local: Compose/`Dockerfile` na porta **8081**; API no repo `api` em **8080** (`host.docker.internal`).
 - Smoke HTTP: collections em `docs/requestly/` (Requestly), não scripts shell.

@@ -8,7 +8,7 @@ const { emitirJwtCliente } = require("../src/jwt");
 applyEnvFile("../.env.test");
 
 describe("emitirJwtCliente", () => {
-  it("emite JWT HS256 com claim cpf, iss e aud alinhados à API", () => {
+  it("emite JWT HS256 com claim cpf (documento), iss e aud alinhados à API", () => {
     const config = loadConfig();
     const token = emitirJwtCliente(config, "92561324354");
     const payload = jwt.verify(token, config.jwtClienteKey, {
@@ -20,5 +20,17 @@ describe("emitirJwtCliente", () => {
     assert.equal(payload.cpf, "92561324354");
     assert.equal(payload.iss, "tech-challenge-cliente");
     assert.equal(payload.aud, "tech-challenge-cliente");
+  });
+
+  it("emite JWT com CNPJ no claim cpf (contrato da API)", () => {
+    const config = loadConfig();
+    const token = emitirJwtCliente(config, "11222333000181");
+    const payload = jwt.verify(token, config.jwtClienteKey, {
+      algorithms: ["HS256"],
+      issuer: config.jwtClienteIssuer,
+      audience: config.jwtClienteAudience,
+    });
+
+    assert.equal(payload.cpf, "11222333000181");
   });
 });

@@ -16,11 +16,11 @@ Ver [`docs/README.md`](docs/README.md).
 
 ## Contrato HTTP (local)
 
-`POST /` com body `{ "cpf": "92561324354" }` → `{ "token": "<JWT>" }`.
+`POST /` com body `{ "documento": "92561324354" }` (alias `cpf` aceito) → `{ "token": "<JWT>" }`.
 
-A Function chama `GET {API_BASE_URL}/api/system/clientes/por-documento/{cpf}` com header `X-Service-Key`.
+Aceita **CPF ou CNPJ** válidos (`cpf-cnpj-validator`, no espírito da `CpfCnpjLibrary` da API). O JWT mantém o claim `cpf` (contrato da API) com o documento normalizado.
 
-Validação local do CPF: **11 dígitos** (após normalizar); a API decide existência/validade.
+A Function chama `GET {API_BASE_URL}/api/system/clientes/por-documento/{documento}` com header `X-Service-Key`.
 
 ## Desenvolvimento local
 
@@ -34,7 +34,7 @@ curl -sS http://localhost:8080/health
 ```
 
 Use os **mesmos** valores de `JWT_CLIENTE_*` e `SERVICE_AUTH_KEY` no `.env` deste repo.  
-Cliente de teste local: CPF **`92561324354`** (já cadastrado na sua API).
+Cliente de teste local: documento **`92561324354`** (já cadastrado na sua API).
 
 ### 2. Auth
 
@@ -60,7 +60,7 @@ docker compose up -d --build
 Pasta: [`docs/requestly/`](docs/requestly/)
 
 1. Importe `auth.requestly.json` (exploratória) e/ou `auth-e2e-tests.requestly.json`
-2. Environment **Local** (`authUrl=http://localhost:8081`, `cpf=92561324354`)
+2. Environment **Local** (`authUrl=http://localhost:8081`, `documento=92561324354`)
 3. Rode `00-emitir-jwt / emitir-token` ou a pasta e2e no Collection Runner
 
 - `.env.example` — modelo local (copiar para `.env`)

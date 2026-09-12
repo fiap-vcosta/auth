@@ -48,12 +48,12 @@ describe("handleAuth", () => {
       },
     });
     const res = mockRes();
-    await handleAuth({ method: "POST", body: { cpf: "92561324354" } }, res);
+    await handleAuth({ method: "POST", body: { documento: "92561324354" } }, res);
     assert.equal(res.statusCode, 500);
     assert.deepEqual(res.body, { erro: "Configuração inválida do serviço" });
   });
 
-  it("rejeita CPF inválido com 400", async () => {
+  it("rejeita documento inválido com 400", async () => {
     const handleAuth = createHandleAuth({
       loadConfigFn: () => loadConfig(),
       consultarClienteFn: async () => {
@@ -61,9 +61,9 @@ describe("handleAuth", () => {
       },
     });
     const res = mockRes();
-    await handleAuth({ method: "POST", body: { cpf: "111" } }, res);
+    await handleAuth({ method: "POST", body: { documento: "111" } }, res);
     assert.equal(res.statusCode, 400);
-    assert.deepEqual(res.body, { erro: "CPF inválido" });
+    assert.deepEqual(res.body, { erro: "Documento inválido" });
   });
 
   it("retorna 401 quando a API responde 404", async () => {
@@ -72,7 +72,7 @@ describe("handleAuth", () => {
       consultarClienteFn: async () => ({ status: 404 }),
     });
     const res = mockRes();
-    await handleAuth({ method: "POST", body: { cpf: "92561324354" } }, res);
+    await handleAuth({ method: "POST", body: { documento: "92561324354" } }, res);
     assert.equal(res.statusCode, 401);
     assert.deepEqual(res.body, { erro: "Não foi possível autenticar o cliente" });
   });
@@ -83,7 +83,7 @@ describe("handleAuth", () => {
       consultarClienteFn: async () => ({ status: 401 }),
     });
     const res = mockRes();
-    await handleAuth({ method: "POST", body: { cpf: "92561324354" } }, res);
+    await handleAuth({ method: "POST", body: { documento: "92561324354" } }, res);
     assert.equal(res.statusCode, 502);
     assert.deepEqual(res.body, { erro: "Falha na autenticação de serviço com a API" });
   });
@@ -94,9 +94,9 @@ describe("handleAuth", () => {
       consultarClienteFn: async () => ({ status: 400 }),
     });
     const res = mockRes();
-    await handleAuth({ method: "POST", body: { cpf: "92561324354" } }, res);
+    await handleAuth({ method: "POST", body: { documento: "92561324354" } }, res);
     assert.equal(res.statusCode, 400);
-    assert.deepEqual(res.body, { erro: "CPF inválido" });
+    assert.deepEqual(res.body, { erro: "Documento inválido" });
   });
 
   it("retorna 502 quando a API responde status inesperado", async () => {
@@ -105,7 +105,7 @@ describe("handleAuth", () => {
       consultarClienteFn: async () => ({ status: 503 }),
     });
     const res = mockRes();
-    await handleAuth({ method: "POST", body: { cpf: "92561324354" } }, res);
+    await handleAuth({ method: "POST", body: { documento: "92561324354" } }, res);
     assert.equal(res.statusCode, 502);
     assert.deepEqual(res.body, { erro: "Resposta inesperada da API" });
   });
@@ -118,7 +118,7 @@ describe("handleAuth", () => {
       },
     });
     const res = mockRes();
-    await handleAuth({ method: "POST", body: { cpf: "92561324354" } }, res);
+    await handleAuth({ method: "POST", body: { documento: "92561324354" } }, res);
     assert.equal(res.statusCode, 502);
     assert.deepEqual(res.body, { erro: "Falha ao consultar a API" });
   });
@@ -132,20 +132,37 @@ describe("handleAuth", () => {
       },
     });
     const res = mockRes();
-    await handleAuth({ method: "POST", body: { cpf: "92561324354" } }, res);
+    await handleAuth({ method: "POST", body: { documento: "92561324354" } }, res);
     assert.equal(res.statusCode, 500);
     assert.deepEqual(res.body, { erro: "Falha ao emitir token" });
   });
 
-  it("emite JWT quando a API confirma o CPF", async () => {
+  it("emite JWT quando a API confirma o documento (campo documento)", async () => {
     const handleAuth = createHandleAuth({
       loadConfigFn: () => loadConfig(),
       consultarClienteFn: async () => ({ status: 200 }),
       emitirJwtFn: () => "token.jwt.de.teste",
     });
     const res = mockRes();
-    await handleAuth({ method: "POST", body: { cpf: "925.613.243-54" } }, res);
+    await handleAuth({ method: "POST", body: { documento: "925.613.243-54" } }, res);
     assert.equal(res.statusCode, 200);
     assert.deepEqual(res.body, { token: "token.jwt.de.teste" });
+  });
+
+  it("aceita alias cpf no body e CNPJ válido", async () => {
+    let documentoRecebido = null;
+    const handleAuth = createHandleAuth({
+      loadConfigFn: () => loadConfig(),
+      consultarClienteFn: async (_config, documento) => {
+        documentoRecebido = documento;
+        return { status: 200 };
+      },
+      emitirJwtFn: (_config, documento) => `jwt-${documento}`,
+    });
+    const res = mockRes();
+    await handleAuth({ method: "POST", body: { cpf: "11.222.333/0001-81" } }, res);
+    assert.equal(res.statusCode, 200);
+    assert.equal(documentoRecebido, "11222333000181");
+    assert.deepEqual(res.body, { token: "jwt-11222333000181" });
   });
 });

@@ -2,10 +2,10 @@ const jwt = require("jsonwebtoken");
 
 function emitirJwtCliente(
   { jwtClienteKey, jwtClienteIssuer, jwtClienteAudience, jwtExpiresInSeconds = 1800 },
-  cpf,
+  documento,
 ) {
   return jwt.sign(
-    { cpf },
+    { cpf: documento },
     jwtClienteKey,
     {
       algorithm: "HS256",

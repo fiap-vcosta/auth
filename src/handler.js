@@ -1,5 +1,5 @@
 const { loadConfig } = require("./config");
-const { normalizeCpf, isValidCpf } = require("./cpf");
+const { tryNormalizeValidDocumento } = require("./documento");
 const { consultarClientePorDocumento } = require("./api-client");
 const { emitirJwtCliente } = require("./jwt");
 
@@ -29,15 +29,15 @@ function createHandleAuth({
     }
 
     const body = req.body && typeof req.body === "object" ? req.body : {};
-    const cpf = normalizeCpf(body.cpf);
-    if (!isValidCpf(cpf)) {
-      res.status(400).json({ erro: "CPF inválido" });
+    const documento = tryNormalizeValidDocumento(body.documento ?? body.cpf);
+    if (!documento) {
+      res.status(400).json({ erro: "Documento inválido" });
       return;
     }
 
     let consulta;
     try {
-      consulta = await consultarClienteFn(config, cpf);
+      consulta = await consultarClienteFn(config, documento);
     } catch (err) {
       console.error(`Falha ao consultar a API: ${err.message}`);
       res.status(502).json({ erro: "Falha ao consultar a API" });
@@ -56,7 +56,7 @@ function createHandleAuth({
     }
 
     if (consulta.status === 400) {
-      res.status(400).json({ erro: "CPF inválido" });
+      res.status(400).json({ erro: "Documento inválido" });
       return;
     }
 
@@ -67,7 +67,7 @@ function createHandleAuth({
     }
 
     try {
-      const token = emitirJwtFn(config, cpf);
+      const token = emitirJwtFn(config, documento);
       res.status(200).json({ token });
     } catch (err) {
       console.error(`Falha ao emitir JWT: ${err.message}`);

@@ -32,7 +32,7 @@ Cloud Function (GCP) de autenticação de **cliente**: CPF → JWT. Parte da org
 |---------|--------|
 | `src/index.js` | Registra o target HTTP `auth` no Functions Framework |
 | `src/handler.js` | Handler HTTP (CPF → JWT) |
-| `src/cpf.js` | Normalização / validação de CPF |
+| `src/documento.js` | Normalização / validação CPF ou CNPJ (`cpf-cnpj-validator`) |
 | `src/api-client.js` | GET cliente por documento na API |
 | `src/jwt.js` | Emissão do JWT cliente (HS256) |
 | `src/config.js` | Lê e valida env obrigatório |
@@ -54,4 +54,4 @@ npm start                    # :8081
 docker compose up -d --build # alternativa
 ```
 
-Smoke HTTP: importar [`docs/requestly/`](docs/requestly/) no Requestly (CPF `92561324354`).
+Smoke HTTP: importar [`docs/requestly/`](docs/requestly/) no Requestly (documento `92561324354`).
