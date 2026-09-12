@@ -5,11 +5,13 @@ alwaysApply: true
 
 # Restrições do projeto (`auth`)
 
-- Escopo: **Cloud Function** (Node.js 22 + Functions Framework, 2nd gen) que recebe CPF e emite **JWT de cliente** (não substitui login staff da `api`).
+- Escopo: **Cloud Function** (Node.js 22.23.2 + Functions Framework, 2nd gen) que recebe CPF e emite **JWT de cliente** (não substitui login staff da `api`).
+- Mensagens de erro e logs voltados a humanos: **pt-BR** (domínio do produto).
 - Mantém coexistência com **token opaco** de aprovação na API; a Function não remove `TokenAprovacao`.
 - JWT **cliente** usa secret **separado** do JWT staff; este repo/ambiente **não** deve conhecer o secret admin.
 - Function → API: HTTPS + autenticação de serviço (shared secret / ID token SA se couber); **sem** VPC nesta fase.
 - Não inventar rotas de autoatendimento além do fluxo CPF → JWT alinhado às ADRs em `docs/adrs/` e aos requisitos da `api`.
 - CI barato (lint/test); **CD/deploy** só manual (`workflow_dispatch`) — nunca apply/deploy automático em todo push `main`.
 - Não commitar secrets; só referências a Secret Manager / GitHub Secrets.
-- Pin de Node em **`.nvmrc`** (major 22); CI usa `node-version-file: .nvmrc`.
+- Pin de Node em **`.nvmrc`** (ex.: `22.23.2`); CI usa `node-version-file: .nvmrc`.
+- Dependências no `package.json` com **versão exata** (sem `^` / `~`).

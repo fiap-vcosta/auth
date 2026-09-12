@@ -6,9 +6,9 @@ Valida CPF via API (HTTPS + secret de serviço) e emite JWT de cliente com secre
 
 ## Stack
 
-- **Runtime:** Node.js 22 (LTS) — pin em [`.nvmrc`](.nvmrc); alinhado ao runtime suportado pelo Functions Framework / Cloud Functions
+- **Runtime:** Node.js **22.23.2** — pin em [`.nvmrc`](.nvmrc)
 - **Framework:** [Functions Framework](https://github.com/GoogleCloudPlatform/functions-framework-nodejs) (alvo Cloud Functions 2nd gen)
-- **CI:** lint + test em todo push/PR (sem deploy automático)
+- **CI:** jobs separados de lint (summary error/warning) e testes unitários (summary de cobertura); sem deploy automático
 
 ## Decisões (ADRs)
 
@@ -17,11 +17,13 @@ Ver [`docs/README.md`](docs/README.md).
 ## Desenvolvimento local (scaffold)
 
 ```bash
-nvm use          # ou Node 22 compatível com .nvmrc
+nvm install   # se ainda não tiver o pin do .nvmrc
+nvm use
 npm ci
 npm run lint
 npm test
-npm start        # http://localhost:8081 — handler ainda retorna 501 (lógica na próxima entrega)
+npm run test:coverage
+npm start     # http://localhost:8081 — handler ainda retorna 501 (lógica na próxima entrega)
 ```
 
 Variáveis de ambiente obrigatórias (validadas por `src/config.js`; uso completo no handler vem depois):

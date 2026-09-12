@@ -1,5 +1,3 @@
-"use strict";
-
 const REQUIRED = [
   "API_BASE_URL",
   "JWT_CLIENTE_KEY",
@@ -11,7 +9,7 @@ const REQUIRED = [
 function loadConfig(env = process.env) {
   const missing = REQUIRED.filter((key) => !env[key] || String(env[key]).trim() === "");
   if (missing.length > 0) {
-    throw new Error(`missing required env: ${missing.join(", ")}`);
+    throw new Error(`Variáveis de ambiente obrigatórias ausentes: ${missing.join(", ")}`);
   }
 
   return {

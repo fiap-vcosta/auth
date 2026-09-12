@@ -1,34 +1,29 @@
-"use strict";
+const js = require("@eslint/js");
+const n = require("eslint-plugin-n");
+const globals = require("globals");
 
 module.exports = [
   {
-    ignores: ["node_modules/**", "coverage/**"],
+    ignores: ["node_modules/**", "coverage/**", "eslint-report.json"],
   },
+  js.configs.recommended,
+  n.configs["flat/recommended"],
   {
     files: ["**/*.js"],
     languageOptions: {
       ecmaVersion: 2024,
       sourceType: "commonjs",
       globals: {
-        console: "readonly",
-        process: "readonly",
-        module: "readonly",
-        require: "readonly",
-        __dirname: "readonly",
-        __filename: "readonly",
-        Buffer: "readonly",
-        setTimeout: "readonly",
-        clearTimeout: "readonly",
-        URL: "readonly",
-        fetch: "readonly",
+        ...globals.node,
       },
     },
     rules: {
-      "no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
-      "no-undef": "error",
-      "eqeqeq": ["error", "always"],
-      "no-var": "error",
-      "prefer-const": "error",
+      "n/no-unpublished-require": [
+        "error",
+        {
+          allowModules: ["@eslint/js", "eslint-plugin-n", "globals"],
+        },
+      ],
     },
   },
 ];

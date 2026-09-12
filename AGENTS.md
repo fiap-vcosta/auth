@@ -19,7 +19,8 @@ Cloud Function (GCP) de autenticação de **cliente**: CPF → JWT. Parte da org
 
 ## Regras canônicas (resumo)
 
-- Runtime: **Node.js 22** (`.nvmrc`) + Functions Framework; Cloud Functions 2nd gen
+- Runtime: **Node.js 22.23.2** (`.nvmrc`) + Functions Framework; Cloud Functions 2nd gen
+- Mensagens de erro / logs voltados ao usuário: **pt-BR**
 - Dois JWT secrets (staff na API × cliente aqui)
 - Opção B: Function → API por HTTPS + secret de serviço; sem VPC
 - Deploy caro = manual; merge em `main` não liga nuvem
@@ -41,5 +42,6 @@ nvm use
 npm ci
 npm run lint
 npm test
+npm run test:coverage
 npm start   # porta 8081
 ```

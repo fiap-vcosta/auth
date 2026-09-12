@@ -25,3 +25,4 @@ logs/
 *.log
 coverage/
 .nyc_output/
+eslint-report.json

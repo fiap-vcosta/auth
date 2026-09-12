@@ -1,5 +1,3 @@
-"use strict";
-
 const { describe, it } = require("node:test");
 const assert = require("node:assert/strict");
 const { handleAuth } = require("../src/handler");
@@ -20,17 +18,17 @@ function mockRes() {
 }
 
 describe("handleAuth (scaffold)", () => {
-  it("rejects non-POST with 405", async () => {
+  it("rejeita método diferente de POST com 405", async () => {
     const res = mockRes();
     await handleAuth({ method: "GET" }, res);
     assert.equal(res.statusCode, 405);
-    assert.deepEqual(res.body, { error: "method_not_allowed" });
+    assert.deepEqual(res.body, { erro: "Método não permitido" });
   });
 
-  it("returns 501 until CPF → JWT is implemented", async () => {
+  it("retorna 501 até o fluxo CPF → JWT ser implementado", async () => {
     const res = mockRes();
     await handleAuth({ method: "POST", body: { cpf: "43372251034" } }, res);
     assert.equal(res.statusCode, 501);
-    assert.deepEqual(res.body, { error: "not_implemented" });
+    assert.deepEqual(res.body, { erro: "Não implementado" });
   });
 });

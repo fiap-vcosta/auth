@@ -1,12 +1,10 @@
-"use strict";
-
 async function handleAuth(req, res) {
   if (req.method !== "POST") {
-    res.status(405).json({ error: "method_not_allowed" });
+    res.status(405).json({ erro: "Método não permitido" });
     return;
   }
 
-  res.status(501).json({ error: "not_implemented" });
+  res.status(501).json({ erro: "Não implementado" });
 }
 
 module.exports = { handleAuth };

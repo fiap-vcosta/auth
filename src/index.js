@@ -1,5 +1,3 @@
-"use strict";
-
 const functions = require("@google-cloud/functions-framework");
 const { handleAuth } = require("./handler");
 
