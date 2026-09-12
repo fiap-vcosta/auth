@@ -1,0 +1,13 @@
+---
+description: Layout e estilo Node do repo auth
+alwaysApply: true
+---
+
+# Layout e estilo (`auth`)
+
+- Entry HTTP: `src/index.js` registra o target `auth`; lógica em `src/handler.js`; env em `src/config.js`.
+- Testes em `test/` com `node --test` (sem framework extra sem necessidade).
+- **Sem comentários narrativos** no JS — nomes e estrutura bastam.
+- `.gitignore` agrupado por seção (`# Node`, `# Env`, `# OS`, …).
+- `package.json` `engines.node` alinhado ao `.nvmrc` (`>=22 <23`).
+- README: propósito, stack, comandos locais; sem pastas só do workspace `local/` nem numeração de checklist interno.
