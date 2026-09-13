@@ -38,6 +38,7 @@ Cloud Function (GCP) de autenticação de **cliente**: documento (CPF/CNPJ) → 
 | `src/presentation/` | Handler HTTP |
 | `src/index.js` | Entry Functions Framework |
 | `docker-compose.yml` / `Dockerfile` | Ambiente local na porta 8081 |
+| `terraform/` | Cloud Run (tf-apply / tf-destroy) |
 | `docs/requestly/` | Collections Requestly |
 | `test/` | Testes espelhando `src/` |
 
