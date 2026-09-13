@@ -24,8 +24,7 @@ Cloud Function (GCP) de autenticação de **cliente**: documento (CPF/CNPJ) → 
 - Body: só `documento` (CPF ou CNPJ); claim JWT `documento` (alinhado à API)
 - Respostas: `{ errors }` na validação; Problem Details nos demais erros
 - Opção B: Function → API por HTTPS + secret de serviço; sem VPC
-- Deploy: merge → `build-push`; subir/descer nuvem = `tf-apply` / `tf-destroy` manuais (Cloud Run no state prefix `auth`)
-- Secrets de apply: mesmos `JWT_CLIENTE_KEY` / `SERVICE_AUTH_KEY` da `api` via `TF_VAR_*`; `API_BASE_URL` via input ou var
+- CD: merge → `build-push` (imagem no AR); Cloud Run sobe/desce no **`infra-k8s`** (`tf-apply` / `tf-destroy`)
 - Local: API Compose `:8080` + auth `:8081`; mesmos `JWT_CLIENTE_*` / `SERVICE_AUTH_KEY`
 
 ## Layout
@@ -38,7 +37,6 @@ Cloud Function (GCP) de autenticação de **cliente**: documento (CPF/CNPJ) → 
 | `src/presentation/` | Handler HTTP |
 | `src/index.js` | Entry Functions Framework |
 | `docker-compose.yml` / `Dockerfile` | Ambiente local na porta 8081 |
-| `terraform/` | Cloud Run (tf-apply / tf-destroy) |
 | `docs/requestly/` | Collections Requestly |
 | `test/` | Testes espelhando `src/` |
 

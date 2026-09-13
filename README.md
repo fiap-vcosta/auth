@@ -8,8 +8,8 @@ Valida CPF via API (HTTPS + secret de serviço) e emite JWT de cliente com secre
 
 - **Runtime:** Node.js **22.23.2** — pin em [`.nvmrc`](.nvmrc)
 - **Framework:** [Functions Framework](https://github.com/GoogleCloudPlatform/functions-framework-nodejs) **5.x** (alvo Cloud Functions 2nd gen)
-- **CI:** lint + testes (Node) e `terraform fmt`/`validate`
-- **CD:** merge em `main` → **build-push** da imagem no Artifact Registry; **tf-apply** manual promove no Cloud Run; **tf-destroy** derruba o serviço (fora do ciclo do `infra-k8s`)
+- **CI:** jobs separados de lint (summary error/warning) e testes unitários (summary de cobertura)
+- **CD:** merge em `main` → **build-push** da imagem no Artifact Registry; o serviço Cloud Run é criado/atualizado/destruído pelo **`tf-apply` / `tf-destroy` do [`infra-k8s`](https://github.com/fiap-vcosta/infra-k8s)** (mesmo ciclo da demo)
 
 ## Decisões (ADRs)
 
@@ -83,50 +83,27 @@ JWT expira em **1800s** (hardcoded).
 
 ## Deploy na GCP
 
-1. **Merge em `main`** → workflow `build-push` → imagem  
+Este repo só **publica a imagem**. O Cloud Run `auth` mora no Terraform do [`infra-k8s`](https://github.com/fiap-vcosta/infra-k8s) e sobe/desce com a demo.
+
+1. **Merge em `main`** → workflow `build-push` →  
    `{region}-docker.pkg.dev/{project}/{repo}/auth:latest` (e tag do SHA)
-2. **Subir** → Actions → `tf-apply` (`workflow_dispatch`) — Terraform aplica o Cloud Run a partir da imagem
-3. **Derrubar** → Actions → `tf-destroy` — remove o serviço (o `tf-destroy` do `infra-k8s` **não** inclui o auth)
+2. Na janela de demo: `infra-k8s` → **`tf-apply`** (cluster + Cloud Run auth) — ver README do `infra-k8s`
+3. **`tf-destroy`** do `infra-k8s` remove o auth junto com o cluster
 
-Root module: [`terraform/`](terraform/). State remoto: bucket `vcosta-fiap-tech-challenge-tfstate`, prefix `auth`.
+Pré-requisitos do `build-push`:
 
-Pré-requisitos:
+1. Apply do `infra-bootstrap` (Artifact Registry + SA de CI com `artifactregistry.writer`)
+2. Org vars: `GCP_PROJECT_ID`, `GCP_REGION`, `GCP_AR_REPOSITORY`, `GCP_WORKLOAD_IDENTITY_PROVIDER`, `GCP_SERVICE_ACCOUNT_EMAIL`
 
-1. Apply do `infra-bootstrap` com APIs/roles de Run + `artifactregistry.writer` na SA de CI
-2. Org vars (iguais às da `api`): `GCP_PROJECT_ID`, `GCP_REGION`, `GCP_AR_REPOSITORY`, `GCP_WORKLOAD_IDENTITY_PROVIDER`, `GCP_SERVICE_ACCOUNT_EMAIL`
-3. Secrets **idênticos** aos da `api` (org ou repo):
+Secrets `JWT_CLIENTE_KEY` / `SERVICE_AUTH_KEY` e a var `API_BASE_URL` são consumidos no **`tf-apply` do `infra-k8s`**, não neste repo.
 
-| Secret | Papel |
-|--------|--------|
-| `JWT_CLIENTE_KEY` | Assinatura HS256 do JWT cliente |
-| `SERVICE_AUTH_KEY` | Header `X-Service-Key` na chamada à API |
-
-4. URL da API:
-
-| Fonte | Uso |
-|-------|-----|
-| Input `api_base_url` no `tf-apply` | Sobrescreve naquele run |
-| Repo/org var `API_BASE_URL` | Default quando o input vem vazio |
-
-Issuer/audience default: `tech-challenge-cliente` (override opcional via vars `JWT_CLIENTE_ISSUER` / `JWT_CLIENTE_AUDIENCE`).
-
-```text
-Actions → tf-apply → Run workflow → (opcional) API_BASE_URL / image_tag → Run
-```
-
-Serviço HTTP público (`roles/run.invoker` para `allUsers`). A URL sai no Job Summary (`terraform output service_uri`).
-
-Smoke rápido (documento seed da API):
+Smoke (após o apply do k8s; URL no output/Job Summary do `infra-k8s`):
 
 ```bash
 curl -sS -X POST "$AUTH_URI" \
   -H 'content-type: application/json' \
   -d '{"documento":"92561324354"}'
 ```
-
-A API na GCP precisa estar no ar para o auth validar o documento.
-
-Os secrets passam como `TF_VAR_*` no apply (ficam no state do prefix `auth`). Unificar no Secret Manager é melhoria futura do checklist.
 
 ## Agentes
 

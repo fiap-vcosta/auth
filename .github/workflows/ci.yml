@@ -2,15 +2,10 @@ name: CI
 
 on:
   push:
-  pull_request:
 
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
-
-permissions:
-  contents: read
-  id-token: write
 
 jobs:
   lint:
@@ -154,28 +149,3 @@ jobs:
           path: coverage/
           if-no-files-found: warn
           retention-days: 1
-
-  terraform-validate:
-    name: Terraform fmt / validate
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-        working-directory: terraform
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: "1.16.1"
-
-      - name: Terraform fmt
-        run: terraform fmt -check -recursive
-
-      - name: Terraform init
-        run: terraform init -backend=false -input=false
-
-      - name: Terraform validate
-        run: terraform validate
