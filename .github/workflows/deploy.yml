@@ -7,6 +7,11 @@ on:
         description: "API_BASE_URL (URL pública da API). Vazio = usa a repo/org var API_BASE_URL"
         required: false
         type: string
+      image_tag:
+        description: "Tag da imagem no Artifact Registry (default: latest)"
+        required: false
+        type: string
+        default: latest
 
 concurrency:
   group: deploy
@@ -17,30 +22,28 @@ permissions:
   id-token: write
 
 env:
-  FUNCTION_NAME: auth
-  FUNCTION_RUNTIME: nodejs22
-  FUNCTION_MEMORY: 256Mi
-  FUNCTION_TIMEOUT: 60s
+  SERVICE_NAME: auth
+  SERVICE_MEMORY: 256Mi
+  SERVICE_TIMEOUT: 60s
+  SERVICE_PORT: "8080"
   JWT_CLIENTE_ISSUER_DEFAULT: tech-challenge-cliente
   JWT_CLIENTE_AUDIENCE_DEFAULT: tech-challenge-cliente
 
 jobs:
   deploy:
-    name: Deploy Cloud Function
+    name: Deploy Cloud Run (Function)
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
       - name: Check required org vars
         env:
           GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
           GCP_REGION: ${{ vars.GCP_REGION }}
+          GCP_AR_REPOSITORY: ${{ vars.GCP_AR_REPOSITORY }}
           GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           GCP_SERVICE_ACCOUNT_EMAIL: ${{ vars.GCP_SERVICE_ACCOUNT_EMAIL }}
         run: |
           missing=()
-          for name in GCP_PROJECT_ID GCP_REGION GCP_WORKLOAD_IDENTITY_PROVIDER GCP_SERVICE_ACCOUNT_EMAIL; do
+          for name in GCP_PROJECT_ID GCP_REGION GCP_AR_REPOSITORY GCP_WORKLOAD_IDENTITY_PROVIDER GCP_SERVICE_ACCOUNT_EMAIL; do
             [[ -n "${!name}" ]] || missing+=("$name")
           done
           if (( ${#missing[@]} > 0 )); then
@@ -53,6 +56,7 @@ jobs:
         env:
           INPUT_API_BASE_URL: ${{ inputs.api_base_url }}
           VAR_API_BASE_URL: ${{ vars.API_BASE_URL }}
+          IMAGE_TAG: ${{ inputs.image_tag }}
           JWT_CLIENTE_KEY: ${{ secrets.JWT_CLIENTE_KEY }}
           SERVICE_AUTH_KEY: ${{ secrets.SERVICE_AUTH_KEY }}
           JWT_CLIENTE_ISSUER: ${{ vars.JWT_CLIENTE_ISSUER }}
@@ -75,11 +79,15 @@ jobs:
 
           JWT_CLIENTE_ISSUER="${JWT_CLIENTE_ISSUER:-$JWT_CLIENTE_ISSUER_DEFAULT}"
           JWT_CLIENTE_AUDIENCE="${JWT_CLIENTE_AUDIENCE:-$JWT_CLIENTE_AUDIENCE_DEFAULT}"
+          IMAGE_TAG="${IMAGE_TAG:-latest}"
+
+          IMAGE="${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.GCP_AR_REPOSITORY }}/auth:${IMAGE_TAG}"
 
           {
             echo "api_base_url=$API_BASE_URL"
             echo "jwt_cliente_issuer=$JWT_CLIENTE_ISSUER"
             echo "jwt_cliente_audience=$JWT_CLIENTE_AUDIENCE"
+            echo "image=$IMAGE"
           } >> "$GITHUB_OUTPUT"
 
       - name: Authenticate to Google Cloud
@@ -91,56 +99,50 @@ jobs:
       - name: Setup gcloud
         uses: google-github-actions/setup-gcloud@v2
 
-      - name: Deploy Function (2nd gen)
+      - name: Deploy a partir da imagem
         env:
           API_BASE_URL: ${{ steps.config.outputs.api_base_url }}
           JWT_CLIENTE_KEY: ${{ secrets.JWT_CLIENTE_KEY }}
           JWT_CLIENTE_ISSUER: ${{ steps.config.outputs.jwt_cliente_issuer }}
           JWT_CLIENTE_AUDIENCE: ${{ steps.config.outputs.jwt_cliente_audience }}
           SERVICE_AUTH_KEY: ${{ secrets.SERVICE_AUTH_KEY }}
+          IMAGE: ${{ steps.config.outputs.image }}
         run: |
           set -euo pipefail
 
           echo "::add-mask::$JWT_CLIENTE_KEY"
           echo "::add-mask::$SERVICE_AUTH_KEY"
 
-          # Delimitador | evita quebrar com +/= do base64 em --set-env-vars
           ENV_VARS="^|^API_BASE_URL=${API_BASE_URL}|JWT_CLIENTE_KEY=${JWT_CLIENTE_KEY}|JWT_CLIENTE_ISSUER=${JWT_CLIENTE_ISSUER}|JWT_CLIENTE_AUDIENCE=${JWT_CLIENTE_AUDIENCE}|SERVICE_AUTH_KEY=${SERVICE_AUTH_KEY}"
 
-          gcloud functions deploy "$FUNCTION_NAME" \
-            --gen2 \
+          gcloud run deploy "$SERVICE_NAME" \
             --project="${{ vars.GCP_PROJECT_ID }}" \
             --region="${{ vars.GCP_REGION }}" \
-            --runtime="$FUNCTION_RUNTIME" \
-            --source=. \
-            --entry-point=auth \
-            --trigger-http \
+            --image="$IMAGE" \
+            --port="$SERVICE_PORT" \
+            --memory="$SERVICE_MEMORY" \
+            --timeout="$SERVICE_TIMEOUT" \
             --allow-unauthenticated \
-            --memory="$FUNCTION_MEMORY" \
-            --timeout="$FUNCTION_TIMEOUT" \
             --set-env-vars="$ENV_VARS"
 
-      - name: URL e smoke
+      - name: URL e resumo
         run: |
           set -euo pipefail
 
-          uri="$(gcloud functions describe "$FUNCTION_NAME" \
-            --gen2 \
+          uri="$(gcloud run services describe "$SERVICE_NAME" \
             --project="${{ vars.GCP_PROJECT_ID }}" \
             --region="${{ vars.GCP_REGION }}" \
-            --format='value(serviceConfig.uri)')"
+            --format='value(status.url)')"
 
           if [[ -z "$uri" ]]; then
-            echo "Function sem URI após o deploy" >&2
+            echo "Serviço sem URL após o deploy" >&2
             exit 1
           fi
 
           {
-            echo "## Function auth no ar"
+            echo "## Auth no ar (Cloud Run)"
             echo ""
             echo "- URL: \`$uri\`"
+            echo "- Imagem: \`${{ steps.config.outputs.image }}\`"
             echo "- Contrato: \`POST $uri\` com body \`{ \"documento\": \"...\" }\`"
-            echo "- Runtime: \`$FUNCTION_RUNTIME\` (2nd gen), memória \`$FUNCTION_MEMORY\`"
           } >> "$GITHUB_STEP_SUMMARY"
-
-          echo "FUNCTION_URI=$uri" >> "$GITHUB_ENV"
