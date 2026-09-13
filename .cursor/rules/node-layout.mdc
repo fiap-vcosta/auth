@@ -25,4 +25,4 @@ alwaysApply: true
 - **Sem comentários narrativos** no JS.
 - `.gitignore` agrupado por seção (`# Node`, `# Env`, `# OS`, …).
 - `package.json` com versões **exatas**; `engines.node` = pin do `.nvmrc`.
-- README: propósito, stack, comandos locais; sem pastas só do workspace `local/` nem numeração de checklist interno.
+- README: propósito, stack, comandos locais e build-push; Cloud Run documentado no `infra-k8s`; sem pastas só do workspace `local/` nem numeração de checklist interno.

@@ -8,7 +8,8 @@ Valida CPF via API (HTTPS + secret de serviço) e emite JWT de cliente com secre
 
 - **Runtime:** Node.js **22.23.2** — pin em [`.nvmrc`](.nvmrc)
 - **Framework:** [Functions Framework](https://github.com/GoogleCloudPlatform/functions-framework-nodejs) **5.x** (alvo Cloud Functions 2nd gen)
-- **CI:** jobs separados de lint (summary error/warning) e testes unitários (summary de cobertura); sem deploy automático
+- **CI:** jobs separados de lint (summary error/warning) e testes unitários (summary de cobertura)
+- **CD:** merge em `main` → **build-push** da imagem no Artifact Registry; o serviço Cloud Run é criado/atualizado/destruído pelo **`tf-apply` / `tf-destroy` do [`infra-k8s`](https://github.com/fiap-vcosta/infra-k8s)** (mesmo ciclo da demo)
 
 ## Decisões (ADRs)
 
@@ -80,7 +81,29 @@ Pasta: [`docs/requestly/`](docs/requestly/)
 
 JWT expira em **1800s** (hardcoded).
 
-Deploy GCP = **manual** (`workflow_dispatch`) — próxima entrega.
+## Deploy na GCP
+
+Este repo só **publica a imagem**. O Cloud Run `auth` mora no Terraform do [`infra-k8s`](https://github.com/fiap-vcosta/infra-k8s) e sobe/desce com a demo.
+
+1. **Merge em `main`** → workflow `build-push` →  
+   `{region}-docker.pkg.dev/{project}/{repo}/auth:latest` (e tag do SHA)
+2. Na janela de demo: `infra-k8s` → **`tf-apply`** (cluster + Cloud Run auth) — ver README do `infra-k8s`
+3. **`tf-destroy`** do `infra-k8s` remove o auth junto com o cluster
+
+Pré-requisitos do `build-push`:
+
+1. Apply do `infra-bootstrap` (Artifact Registry + SA de CI com `artifactregistry.writer`)
+2. Org vars: `GCP_PROJECT_ID`, `GCP_REGION`, `GCP_AR_REPOSITORY`, `GCP_WORKLOAD_IDENTITY_PROVIDER`, `GCP_SERVICE_ACCOUNT_EMAIL`
+
+Secrets `JWT_CLIENTE_KEY` / `SERVICE_AUTH_KEY` e a var `API_BASE_URL` são consumidos no **`tf-apply` do `infra-k8s`**, não neste repo.
+
+Smoke (após o apply do k8s; URL no output/Job Summary do `infra-k8s`):
+
+```bash
+curl -sS -X POST "$AUTH_URI" \
+  -H 'content-type: application/json' \
+  -d '{"documento":"92561324354"}'
+```
 
 ## Agentes
 
