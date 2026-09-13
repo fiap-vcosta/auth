@@ -25,6 +25,41 @@ Erros de validação: `{ "errors": ["Documento inválido."] }`. Cliente inexiste
 
 A Function chama `GET {API_BASE_URL}/api/system/clientes/por-documento/{documento}` com header `X-Service-Key`.
 
+## Sequência de autenticação
+
+Fluxo completo até aprovar/rejeitar orçamento (token opaco da OS **permanece**; o JWT só prova identidade):
+
+```mermaid
+sequenceDiagram
+  participant Cliente
+  participant Auth as Auth_CloudRun
+  participant Api as API
+  participant Db as PostgreSQL
+
+  Cliente->>Auth: POST documento CPF_ou_CNPJ
+  Auth->>Api: GET cliente por documento X-Service-Key
+  Api->>Db: consulta Cliente
+  Api-->>Auth: 200 existe ou 404
+  Auth-->>Cliente: JWT claim documento
+
+  Cliente->>Api: POST aprovar_ou_rejeitar token_opaco + Bearer JWT
+  Api->>Api: localiza OS pelo token opaco
+  Api->>Api: documento do JWT == documento do dono da OS
+  alt ownership ok
+    Api-->>Cliente: 200 orcamento atualizado
+  else documento de outro cliente
+    Api-->>Cliente: 403 ou 404
+  end
+```
+
+1. Cliente envia `{ "documento" }` ao auth.
+2. Auth valida o documento e consulta a API com secret de serviço (`X-Service-Key`).
+3. Auth emite JWT cliente (claim `documento`, exp 1800s) com secret **separado** do JWT staff.
+4. Cliente chama aprovar/rejeitar na API com `Authorization: Bearer <JWT>` **e** `?token=` opaco.
+5. A API localiza a OS pelo opaco e exige que o documento do JWT seja o do cliente dono da OS.
+
+Entrada oficial na demo (HTTPS nomeado + API Gateway `/auth` + `/api`) vive no [`infra-k8s`](https://github.com/fiap-vcosta/infra-k8s); este repo só publica a imagem.
+
 ## Desenvolvimento local
 
 ### 1. API (repo `api`)
