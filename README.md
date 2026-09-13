@@ -8,8 +8,8 @@ Valida CPF via API (HTTPS + secret de serviço) e emite JWT de cliente com secre
 
 - **Runtime:** Node.js **22.23.2** — pin em [`.nvmrc`](.nvmrc)
 - **Framework:** [Functions Framework](https://github.com/GoogleCloudPlatform/functions-framework-nodejs) **5.x** (alvo Cloud Functions 2nd gen)
-- **CI:** jobs separados de lint (summary error/warning) e testes unitários (summary de cobertura)
-- **CD:** merge em `main` faz **build-push** da imagem no Artifact Registry; **deploy** é manual (`workflow_dispatch`) e só promove a imagem — igual à `api`
+- **CI:** lint + testes (Node) e `terraform fmt`/`validate`
+- **CD:** merge em `main` → **build-push** da imagem no Artifact Registry; **tf-apply** manual promove no Cloud Run; **tf-destroy** derruba o serviço (fora do ciclo do `infra-k8s`)
 
 ## Decisões (ADRs)
 
@@ -83,15 +83,16 @@ JWT expira em **1800s** (hardcoded).
 
 ## Deploy na GCP
 
-Mesmo padrão da `api`:
-
 1. **Merge em `main`** → workflow `build-push` → imagem  
    `{region}-docker.pkg.dev/{project}/{repo}/auth:latest` (e tag do SHA)
-2. **Deploy manual** → workflow `deploy` (`workflow_dispatch`) promove a imagem no **Cloud Run** (Functions 2nd gen / container) — **não** sobe no merge
+2. **Subir** → Actions → `tf-apply` (`workflow_dispatch`) — Terraform aplica o Cloud Run a partir da imagem
+3. **Derrubar** → Actions → `tf-destroy` — remove o serviço (o `tf-destroy` do `infra-k8s` **não** inclui o auth)
+
+Root module: [`terraform/`](terraform/). State remoto: bucket `vcosta-fiap-tech-challenge-tfstate`, prefix `auth`.
 
 Pré-requisitos:
 
-1. Apply do `infra-bootstrap` com APIs/roles de Function/Run + `artifactregistry.writer` na SA de CI
+1. Apply do `infra-bootstrap` com APIs/roles de Run + `artifactregistry.writer` na SA de CI
 2. Org vars (iguais às da `api`): `GCP_PROJECT_ID`, `GCP_REGION`, `GCP_AR_REPOSITORY`, `GCP_WORKLOAD_IDENTITY_PROVIDER`, `GCP_SERVICE_ACCOUNT_EMAIL`
 3. Secrets **idênticos** aos da `api` (org ou repo):
 
@@ -100,20 +101,20 @@ Pré-requisitos:
 | `JWT_CLIENTE_KEY` | Assinatura HS256 do JWT cliente |
 | `SERVICE_AUTH_KEY` | Header `X-Service-Key` na chamada à API |
 
-4. URL da API (LB HTTP agora; HTTPS nomeado depois):
+4. URL da API:
 
 | Fonte | Uso |
 |-------|-----|
-| Input `api_base_url` no Run workflow | Sobrescreve naquele run |
+| Input `api_base_url` no `tf-apply` | Sobrescreve naquele run |
 | Repo/org var `API_BASE_URL` | Default quando o input vem vazio |
 
 Issuer/audience default: `tech-challenge-cliente` (override opcional via vars `JWT_CLIENTE_ISSUER` / `JWT_CLIENTE_AUDIENCE`).
 
 ```text
-Actions → deploy → Run workflow → (opcional) API_BASE_URL / image_tag → Run
+Actions → tf-apply → Run workflow → (opcional) API_BASE_URL / image_tag → Run
 ```
 
-HTTP público (`--allow-unauthenticated`). A URL aparece no Job Summary.
+Serviço HTTP público (`roles/run.invoker` para `allUsers`). A URL sai no Job Summary (`terraform output service_uri`).
 
 Smoke rápido (documento seed da API):
 
@@ -125,11 +126,7 @@ curl -sS -X POST "$AUTH_URI" \
 
 A API na GCP precisa estar no ar para o auth validar o documento.
 
-Para derrubar só o auth (não entra no `tf-destroy` do `infra-k8s`):
-
-```bash
-gcloud run services delete auth --region=us-central1 --project=vcosta-fiap-tech-challenge
-```
+Os secrets passam como `TF_VAR_*` no apply (ficam no state do prefix `auth`). Unificar no Secret Manager é melhoria futura do checklist.
 
 ## Agentes
 

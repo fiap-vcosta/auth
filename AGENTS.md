@@ -24,8 +24,8 @@ Cloud Function (GCP) de autenticação de **cliente**: documento (CPF/CNPJ) → 
 - Body: só `documento` (CPF ou CNPJ); claim JWT `documento` (alinhado à API)
 - Respostas: `{ errors }` na validação; Problem Details nos demais erros
 - Opção B: Function → API por HTTPS + secret de serviço; sem VPC
-- Deploy caro = manual (`workflow_dispatch` promove imagem); merge em `main` só faz `build-push` no Artifact Registry (como a `api`)
-- Secrets de deploy: mesmos `JWT_CLIENTE_KEY` / `SERVICE_AUTH_KEY` do repo `api`; `API_BASE_URL` via input ou var
+- Deploy: merge → `build-push`; subir/descer nuvem = `tf-apply` / `tf-destroy` manuais (Cloud Run no state prefix `auth`)
+- Secrets de apply: mesmos `JWT_CLIENTE_KEY` / `SERVICE_AUTH_KEY` da `api` via `TF_VAR_*`; `API_BASE_URL` via input ou var
 - Local: API Compose `:8080` + auth `:8081`; mesmos `JWT_CLIENTE_*` / `SERVICE_AUTH_KEY`
 
 ## Layout

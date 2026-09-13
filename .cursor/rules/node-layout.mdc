@@ -22,7 +22,8 @@ alwaysApply: true
 - Testes com `node --test` + `--env-file=.env.test`; cobertura via `c8`.
 - ESLint flat: `@eslint/js` recommended + `eslint-plugin-n` recommended.
 - Mensagens de erro / logs: **pt-BR**.
-- **Sem comentários narrativos** no JS.
-- `.gitignore` agrupado por seção (`# Node`, `# Env`, `# OS`, …).
+- Root Terraform em **`terraform/`** (Cloud Run do auth); CI usa `working-directory: terraform` e pin Terraform alinhado a `infra-db` / `infra-k8s`.
+- **Sem comentários narrativos** no JS nem em `.tf`.
+- `.gitignore` agrupado por seção (`# Node`, `# Env`, `# Terraform`, `# OS`, …).
 - `package.json` com versões **exatas**; `engines.node` = pin do `.nvmrc`.
-- README: propósito, stack, comandos locais; sem pastas só do workspace `local/` nem numeração de checklist interno.
+- README: propósito, stack, comandos locais e up/down GCP; sem pastas só do workspace `local/` nem numeração de checklist interno.
