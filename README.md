@@ -102,13 +102,7 @@ Pasta: [`docs/requestly/`](docs/requestly/)
 3. Documento padrão Local/GCP-Gateway para smoke com auth: **`92561324354`** (CPF válido; crie o cliente na API se ainda não existir — seeds como `43372251034` são rejeitados pelo validador do auth).
 4. Rode `00-emitir-jwt / emitir-token` ou a pasta e2e no Collection Runner
 
-Caminho feliz OS → auth → aprovar (script no repo [`api`](https://github.com/fiap-vcosta/api)):
-
-```bash
-BASE_URL=https://vcosta-fiap.online \
-AUTH_URL=https://vcosta-fiap.online/auth \
-./scripts/e2e-cliente-aprovar.sh
-```
+Caminho feliz OS → auth → aprovar: no repo [`api`](https://github.com/fiap-vcosta/api), Requestly pasta `12-gateway-cliente-aprovar` com environment **GCP-Gateway** (ver `docs/07_api.md` da API).
 
 - `.env.example` — modelo local (copiar para `.env`)
 - `.env.test` — valores dummy dos testes
