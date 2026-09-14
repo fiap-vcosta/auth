@@ -98,8 +98,11 @@ docker compose up -d --build
 Pasta: [`docs/requestly/`](docs/requestly/)
 
 1. Importe `auth.requestly.json` (exploratória) e/ou `auth-e2e-tests.requestly.json`
-2. Environment **Local** (`authUrl=http://localhost:8081`, `documento=92561324354`)
-3. Rode `00-emitir-jwt / emitir-token` ou a pasta e2e no Collection Runner
+2. Environment **Local** (`authUrl=http://localhost:8081`) ou **GCP-Gateway** (`https://vcosta-fiap.online/auth`)
+3. Documento padrão Local/GCP-Gateway para smoke com auth: **`92561324354`** (CPF válido; crie o cliente na API se ainda não existir — seeds como `43372251034` são rejeitados pelo validador do auth).
+4. Rode `00-emitir-jwt / emitir-token` ou a pasta e2e no Collection Runner
+
+Caminho feliz OS → auth → aprovar: no repo [`api`](https://github.com/fiap-vcosta/api), Requestly pasta `12-gateway-cliente-aprovar` com environment **GCP-Gateway** (ver `docs/07_api.md` da API).
 
 - `.env.example` — modelo local (copiar para `.env`)
 - `.env.test` — valores dummy dos testes
@@ -132,13 +135,21 @@ Pré-requisitos do `build-push`:
 
 Secrets `JWT_CLIENTE_KEY` / `SERVICE_AUTH_KEY` e a var `API_BASE_URL` são consumidos no **`tf-apply` do `infra-k8s`**, não neste repo.
 
-Smoke (após o apply do k8s; URL no output/Job Summary do `infra-k8s`):
+Smoke (após o apply do k8s; URL no output/Job Summary do `infra-k8s`, ou apex do Gateway):
 
 ```bash
+# Cloud Run direto
 curl -sS -X POST "$AUTH_URI" \
   -H 'content-type: application/json' \
   -d '{"documento":"92561324354"}'
+
+# Entrada oficial (API Gateway)
+curl -sS -X POST 'https://vcosta-fiap.online/auth' \
+  -H 'content-type: application/json' \
+  -d '{"documento":"92561324354"}'
 ```
+
+O CPF precisa existir na API **e** passar na validação do auth (use `92561324354` após criá-lo via `POST /api/clientes`).
 
 ## Agentes
 

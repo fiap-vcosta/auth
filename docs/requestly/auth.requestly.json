@@ -178,6 +178,28 @@
           "syncValue": ""
         }
       }
+    },
+    {
+      "id": "e2000001-auth-0001-4001-8001-000000000002",
+      "name": "GCP-Gateway",
+      "variables": {
+        "authUrl": {
+          "type": "string",
+          "syncValue": "https://vcosta-fiap.online/auth"
+        },
+        "apiUrl": {
+          "type": "string",
+          "syncValue": "https://vcosta-fiap.online"
+        },
+        "documento": {
+          "type": "string",
+          "syncValue": "92561324354"
+        },
+        "tokenCliente": {
+          "type": "secret",
+          "syncValue": ""
+        }
+      }
     }
   ],
   "packages": []
