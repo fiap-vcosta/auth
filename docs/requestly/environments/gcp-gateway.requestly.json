@@ -1,0 +1,33 @@
+{
+  "meta": {
+    "version": "1.1.0",
+    "exportedAt": "2026-09-14T00:00:00.000Z",
+    "exportedUsing": "Requestly API Client"
+  },
+  "records": [],
+  "environments": [
+    {
+      "id": "e2000001-auth-0001-4001-8001-000000000002",
+      "name": "GCP-Gateway",
+      "variables": {
+        "authUrl": {
+          "type": "string",
+          "syncValue": "https://vcosta-fiap.online/auth"
+        },
+        "apiUrl": {
+          "type": "string",
+          "syncValue": "https://vcosta-fiap.online"
+        },
+        "documento": {
+          "type": "string",
+          "syncValue": "92561324354"
+        },
+        "tokenCliente": {
+          "type": "secret",
+          "syncValue": ""
+        }
+      }
+    }
+  ],
+  "packages": []
+}
