@@ -77,7 +77,7 @@ curl -sS http://localhost:8080/health
 ```
 
 Use os **mesmos** valores de `JWT_CLIENTE_*` e `SERVICE_AUTH_KEY` no `.env` deste repo.  
-Cliente de teste: seed João **`52998224725`** (após seed atualizado na API) ou **`92561324354`** (criar via `POST /api/clientes`).
+Cliente de teste: seed João **`86421537090`** (após seed atualizado na API) ou **`92561324354`** (criar via `POST /api/clientes`).
 
 ### 2. Auth
 
@@ -104,7 +104,7 @@ Collections unificadas no repo [`api`](https://github.com/fiap-vcosta/api) — v
 
 1. Importe `tech-challenge.requestly.json` (pasta **`07-auth`**) e/ou `tech-challenge-e2e-tests.requestly.json` (suite **`13-auth-emitir-jwt`**)
 2. Environment **Docker** / **Local** (`authUrl=http://localhost:8081`) ou **GCP-Gateway** (`https://vcosta-fiap.online/auth`)
-3. Variável `documentoCliente`: seed **`52998224725`** ou **`92561324354`** (criar na API se precisar)
+3. Variável `documentoCliente`: seed **`86421537090`** ou **`92561324354`** (criar na API se precisar)
 4. Rode `07-auth / 00-emitir-jwt / emitir-token` ou a pasta e2e no Collection Runner
 
 Caminho feliz OS → auth → aprovar: pasta `12-gateway-cliente-aprovar` na mesma collection.
@@ -153,7 +153,7 @@ curl -sS -X POST 'https://vcosta-fiap.online/auth' \
   -d '{"documento":"92561324354"}'
 ```
 
-O CPF precisa existir na API **e** passar na validação do auth (seed `52998224725` ou `92561324354` após criá-lo via `POST /api/clientes`).
+O CPF precisa existir na API **e** passar na validação do auth (seed `86421537090` ou `92561324354` após criá-lo via `POST /api/clientes`).
 
 ## Repos da org
 
