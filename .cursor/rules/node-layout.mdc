@@ -16,7 +16,7 @@ alwaysApply: true
 - Env: `.env.example` (modelo), `.env.test` (testes, versionado), `.env` (local, gitignored).
 - JWT cliente: expiração **1800s** hardcoded (sem env).
 - Local: Compose/`Dockerfile` na porta **8081**; API no repo `api` em **8080** (`host.docker.internal`).
-- Smoke HTTP: collections em `docs/requestly/` (Requestly), não scripts shell.
+- Smoke HTTP: collections Requestly no repo **`api`** (`docs/requestly/`, pasta `07-auth` / suite `13-auth-emitir-jwt`); não scripts shell.
 - Body HTTP: só `{ "documento": "..." }` (CPF ou CNPJ); JWT claim `documento`.
 - Respostas: validação `{ "errors": [...] }`; demais erros Problem Details (`http-problem-details`), como na API.
 - Testes com `node --test` + `--env-file=.env.test`; cobertura via `c8`.
@@ -25,4 +25,4 @@ alwaysApply: true
 - **Sem comentários narrativos** no JS.
 - `.gitignore` agrupado por seção (`# Node`, `# Env`, `# OS`, …).
 - `package.json` com versões **exatas**; `engines.node` = pin do `.nvmrc`.
-- README: propósito, stack, comandos locais e build-push; Cloud Run documentado no `infra-k8s`; sem pastas só do workspace `local/` nem numeração de checklist interno.
+- README: propósito, stack, comandos locais e build-push; Cloud Run documentado no `infra-k8s`; README autocontido (sem pastas fora do Git nem numeração de documentos pessoais).

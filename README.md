@@ -27,39 +27,44 @@ A Function chama `GET {API_BASE_URL}/api/system/clientes/por-documento/{document
 
 ## Sequência de autenticação
 
-Fluxo completo até aprovar/rejeitar orçamento (token opaco da OS **permanece**; o JWT só prova identidade):
+Fluxo completo via entrada oficial (API Gateway) até aprovar/rejeitar orçamento (token opaco da OS **permanece**; o JWT só prova identidade):
 
 ```mermaid
 sequenceDiagram
   participant Cliente
+  participant Gw as API_Gateway
   participant Auth as Auth_CloudRun
   participant Api as API
   participant Db as PostgreSQL
 
-  Cliente->>Auth: POST documento CPF_ou_CNPJ
+  Cliente->>Gw: POST /auth documento CPF_ou_CNPJ
+  Gw->>Auth: proxy HTTPS
   Auth->>Api: GET cliente por documento X-Service-Key
   Api->>Db: consulta Cliente
   Api-->>Auth: 200 existe ou 404
-  Auth-->>Cliente: JWT claim documento
+  Auth-->>Gw: JWT claim documento
+  Gw-->>Cliente: JWT
 
-  Cliente->>Api: POST aprovar_ou_rejeitar token_opaco + Bearer JWT
+  Cliente->>Gw: POST /api/.../aprovar_ou_rejeitar token_opaco + Bearer JWT
+  Gw->>Api: proxy HTTPS
   Api->>Api: localiza OS pelo token opaco
   Api->>Api: documento do JWT == documento do dono da OS
   alt ownership ok
-    Api-->>Cliente: 200 orcamento atualizado
+    Api-->>Gw: 200 orcamento atualizado
+    Gw-->>Cliente: 200
   else documento de outro cliente
-    Api-->>Cliente: 403 ou 404
+    Api-->>Gw: 404 sem vazar OS alheia
+    Gw-->>Cliente: 404
   end
 ```
 
-1. Cliente envia `{ "documento" }` ao auth.
+1. Cliente envia `{ "documento" }` a `https://vcosta-fiap.online/auth` (Gateway → Cloud Run).
 2. Auth valida o documento e consulta a API com secret de serviço (`X-Service-Key`).
 3. Auth emite JWT cliente (claim `documento`, exp 1800s) com secret **separado** do JWT staff.
-4. Cliente chama aprovar/rejeitar na API com `Authorization: Bearer <JWT>` **e** `?token=` opaco.
-5. A API localiza a OS pelo opaco e exige que o documento do JWT seja o do cliente dono da OS.
+4. Cliente chama aprovar/rejeitar via Gateway `/api/...` com `Authorization: Bearer <JWT>` **e** `?token=` opaco.
+5. A API localiza a OS pelo opaco e exige que o documento do JWT seja o do cliente dono da OS (mismatch → **404**, sem vazar dados de outro cliente).
 
-Entrada oficial na demo (HTTPS nomeado + API Gateway `/auth` + `/api`) vive no [`infra-k8s`](https://github.com/fiap-vcosta/infra-k8s); este repo só publica a imagem.
-
+Entrada oficial (HTTPS + API Gateway `/auth` + `/api`) e diagrama de componentes: [`infra-k8s`](https://github.com/fiap-vcosta/infra-k8s). Este repo só publica a imagem.
 ## Desenvolvimento local
 
 ### 1. API (repo `api`)
@@ -72,7 +77,7 @@ curl -sS http://localhost:8080/health
 ```
 
 Use os **mesmos** valores de `JWT_CLIENTE_*` e `SERVICE_AUTH_KEY` no `.env` deste repo.  
-Cliente de teste local: documento **`92561324354`** (já cadastrado na sua API).
+Cliente de teste: seed João **`52998224725`** (após seed atualizado na API) ou **`92561324354`** (criar via `POST /api/clientes`).
 
 ### 2. Auth
 
@@ -95,15 +100,14 @@ docker compose up -d --build
 
 ### 3. Requestly (smoke HTTP)
 
-Pasta: [`docs/requestly/`](docs/requestly/)
+Collections unificadas no repo [`api`](https://github.com/fiap-vcosta/api) — ver [`docs/07_api.md`](https://github.com/fiap-vcosta/api/blob/main/docs/07_api.md):
 
-1. Importe `auth.requestly.json` (exploratória) e/ou `auth-e2e-tests.requestly.json`
-2. Environment **Local** (`authUrl=http://localhost:8081`) ou **GCP-Gateway** (`https://vcosta-fiap.online/auth`)
-3. Documento padrão Local/GCP-Gateway para smoke com auth: **`92561324354`** (CPF válido; crie o cliente na API se ainda não existir — seeds como `43372251034` são rejeitados pelo validador do auth).
-4. Rode `00-emitir-jwt / emitir-token` ou a pasta e2e no Collection Runner
+1. Importe `tech-challenge.requestly.json` (pasta **`07-auth`**) e/ou `tech-challenge-e2e-tests.requestly.json` (suite **`13-auth-emitir-jwt`**)
+2. Environment **Docker** / **Local** (`authUrl=http://localhost:8081`) ou **GCP-Gateway** (`https://vcosta-fiap.online/auth`)
+3. Variável `documentoCliente`: seed **`52998224725`** ou **`92561324354`** (criar na API se precisar)
+4. Rode `07-auth / 00-emitir-jwt / emitir-token` ou a pasta e2e no Collection Runner
 
-Caminho feliz OS → auth → aprovar: no repo [`api`](https://github.com/fiap-vcosta/api), Requestly pasta `12-gateway-cliente-aprovar` com environment **GCP-Gateway** (ver `docs/07_api.md` da API).
-
+Caminho feliz OS → auth → aprovar: pasta `12-gateway-cliente-aprovar` na mesma collection.
 - `.env.example` — modelo local (copiar para `.env`)
 - `.env.test` — valores dummy dos testes
 - `.env` — local, **não** versionado
@@ -149,7 +153,17 @@ curl -sS -X POST 'https://vcosta-fiap.online/auth' \
   -d '{"documento":"92561324354"}'
 ```
 
-O CPF precisa existir na API **e** passar na validação do auth (use `92561324354` após criá-lo via `POST /api/clientes`).
+O CPF precisa existir na API **e** passar na validação do auth (seed `52998224725` ou `92561324354` após criá-lo via `POST /api/clientes`).
+
+## Repos da org
+
+| Repo | Papel | Diagrama / doc-chave |
+|------|--------|----------------------|
+| [`infra-bootstrap`](https://github.com/fiap-vcosta/infra-bootstrap) | Rede, WIF, AR, zona DNS | Persistente |
+| [`infra-db`](https://github.com/fiap-vcosta/infra-db) | Cloud SQL | ADRs de banco |
+| [`infra-k8s`](https://github.com/fiap-vcosta/infra-k8s) | GKE + Gateway + Cloud Run auth | [Componentes](https://github.com/fiap-vcosta/infra-k8s#componentes-nuvem) |
+| [`api`](https://github.com/fiap-vcosta/api) | App + manifests + **Requestly** | [ER](https://github.com/fiap-vcosta/api/blob/main/docs/08_modelo-de-dados.md) |
+| [`auth`](https://github.com/fiap-vcosta/auth) | Imagem documento → JWT | **Sequência (acima)** |
 
 ## Agentes
 
