@@ -37,7 +37,6 @@ Cloud Function (GCP) de autenticação de **cliente**: documento (CPF/CNPJ) → 
 | `src/presentation/` | Handler HTTP |
 | `src/index.js` | Entry Functions Framework |
 | `docker-compose.yml` / `Dockerfile` | Ambiente local na porta 8081 |
-| `docs/requestly/` | Collections Requestly |
 | `test/` | Testes espelhando `src/` |
 
 ## Comandos
@@ -53,4 +52,4 @@ npm start                    # :8081
 docker compose up -d --build # alternativa
 ```
 
-Smoke HTTP: importar [`docs/requestly/`](docs/requestly/) no Requestly (documento `92561324354`).
+Smoke HTTP: collections no repo [`api`](https://github.com/fiap-vcosta/api) (`docs/requestly/`, pastas `07-auth` / `13-auth-emitir-jwt`; documento seed `52998224725` ou `92561324354`).
